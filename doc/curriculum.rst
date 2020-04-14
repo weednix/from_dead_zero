@@ -3,6 +3,16 @@ Draft Curiculum
 
 unsorted list of learning topics.
 
+
+Scrum
+-----
+
+- learn scrum basics
+- learn scrum master practices
+- scrum alliance scrum guide:  <https://www.scrumalliance.org/learn-about-scrum/the-scrum-guide>
+
+
+
 Linux Usage
 -----------
 
@@ -32,6 +42,9 @@ Git Basics
 - working with remotes
 - git/github workflow
 - the things of git
+- learn project management features of github
+
+
 
 
 Python
@@ -71,6 +84,11 @@ Networking Basics
   - /etc/resolve.conf
 
 - DHCP
+
+links:
+
+- https://www.youtube.com/watch?v=svkGASq8mNM
+
 
 
 Docker
@@ -124,3 +142,6 @@ AWS
 
 - EC2 VPC
 
+Links:
+
+start on one-day-workshops: https://github.com/ucopacme/start-here/tree/master/one_day_workshops

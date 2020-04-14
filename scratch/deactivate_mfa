@@ -6,3 +6,20 @@
  1014  aws iam delete-virtual-mfa-device --serial-number arn:aws:iam::962936672038:mfa/ssmith
  1015  awsloginprofile ssmith --reset
 
+(python3.7) ashely@horus:~/.aws> awsaccounts report
+
+_______________________
+Active Accounts in Org:
+
+Name:               Alias               Id:             Email:
+Managment           managment           962936672038    management@ucop.edu
+Security            ashely-security     365066511041    ashleyg@ucop.edu
+blee-dev            blee-dev            219234291074    blee-dev@blee.red
+blee-poc            blee-poc            403999741647    blee-poc@blee.red
+blee-prod           blee-prod           633495783471    blee-prod@blee.red
+gorp-dev            gorp-dev            598608341536    gorp-dev@blee.red
+gorp-poc            gorp-poc            215031690010    gorp-poc@blee.red
+gorp-prod           gorp-prod           534447840478    gorp-prod@blee.red
+master              ashely-master       640965621536    ashleyg@sonic.net
+test2               ashely-test2        140462867726    test2@blee.red
+
