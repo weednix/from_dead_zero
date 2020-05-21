@@ -1,0 +1,2485 @@
+## Ash environment
+
+MY_PC=isis.ucop.edu
+echo "PATH=$PATH:/sbin:/usr/sbin" >> .profile
+scp agould@$MY_PC:/home/agould/.ssh/id_dsa.pub ~/.ssh/authorized_keys
+
+
+MOSHOST=auohsucsy02.oracleoutsourcing.com
+scp ~/.ssh/id_dsa.pub c_agould@$MOSHOST:~/.ssh/authorized_keys
+
+
+
+## Use tools
+
+# bash
+cmd > filename 2>&1
+dialog --yesno "Hows the wheather?"  5 30
+dialog --msgbox 'Eat shit and die, creep!' 5 40
+
+# awk
+cat /etc/passwd | awk -F":" '{print $3}'
+ps aux |awk '{print $1}'|uniq
+
+# comm
+comm $TEMPDIR/all $TEMPDIR/new | grep -v ^[[:space:]]
+
+# date
+date +"%F_%R"		# 2004-08-25_12:03
+date +"%Y%m%d"		# 20040825
+date +"%b %_d %T"	# Dec  8 11:32:47
+date +"%Y%m%d-%H.%M.%S"	# 20140306-15.37.23
+echo $(($(date +%s) / 60 / 60 / 24)) # unix epoch date
+
+# sort based on col 3 of /etc/passwd
+sort -n -t: -k3 /etc/passwd
+
+
+# ls
+ls -ltu			# list by atime
+ls -lAd			# do not expand directories, no . .. 
+
+
+# od
+od -t c filename
+od -t az filename
+
+
+# cat
+cat -A file name 	# shows hidden chars, spaces at end of lines, tabs
+
+
+# tree
+tree -d -L 2
+
+
+# mmv
+mmv -r ".gnome*.73.71" ".gnome#1.73"    # -r needed to do directories
+mmv "TutorialPart*" "TutorialPart#1.html"
+mmv "httpd.conf*" "penguin_chroot.httpd.conf#1"
+mmv "*\'*" "#1#2"
+
+
+# at
+at now + 30 minutes 
+at> xmessage -center "Call Kai Tran's customer"
+at> <Ctrl-C>
+
+# man
+man -t login.defs |lpr		#print man pages
+man -P "less +'/ProxyCommand'" ssh_config	# open man page at search string
+
+
+# lpr
+pr -f -l 56 Software-RAID-HOWTO |lpr
+
+
+# gzip
+gunzip -S .img -c /etc/systemimager/boot/initrd.img > initrd
+gzip -9 -c initrd > /etc/systemimager/boot/initrd.img
+
+# ssh
+scp agould@isis:/home/agould/.ssh/id_dsa.pub ~/.ssh/authorized_keys
+scp -r agould@sysdoc:/data/apache/unix/scripts/linux/qa_check .
+scp agould@sysdoc:/data/apache/unix/scripts/linux/installQA/* .
+scp /etc/adsm/TSM.PWD agould@tehanu:/tmp/TSM.PWD.$(hostname)
+scp agould@penny:/dist/rpms/x86-64/systemimager/current/* .
+scp agould@penny:/dist/tarballs/tsm/current/* .
+scp agould@penny:/dist/rpms/x86-64/centrify4/centrifydc-4.0.0-suse9-x86_64.rpm .
+scp agould@cfengine.ucop.edu:/data/cfengine/production/files/cfinit/production_cfinit.conf /etc/cfengine/cfinit.conf
+scp agould@penny:/dist/misc/centrify/current_agent/linux/* .
+
+ssh -Xf root@isis dsm	# start gui app as root on remote host
+ssh -C -X agould@isis	# X11 forwarding with compression
+
+# tunnul port 2025 on Desktop to port 25 on server3.  'localhost' in this 
+# case is relative to server3.
+[student@desktop3 Desktop]$ ssh -Nf -L 2025:localhost:25 server3
+student@server3's password: 
+[student@desktop3 Desktop]$ nc localhost 2025
+220 server3.example.com ESMTP Postfix
+
+
+# keys
+ssh-keyscan shiva
+ssh-keygen -t dsa
+ssh-keygen -i >> ~/.ssh/authorized_keys		# convert commercial ssh
+						# pub key to openssh format
+# agents
+ssh-agent bash 		# starts a new shell with agent environment vars
+			# agent dies when I exit subshell
+eval $(ssh-agent)	# evaluates agent environment vars in current shell
+eval $(ssh-agent -k)	# cleans up on exit
+ssh-add			# add your key to the running agent, supply passphrase
+ssh-add -l
+ssh-add -x		# Lock the agent with a password
+ssh-add -X      	# Unlock the agent.
+
+# 
+ssh -o ForwardAgent=yes ishi	# forwards running agent to new shell on ishi
+
+# run from cron on web1
+su - jblauth -c  "ssh jblauth@apollo.ucop.edu /usr/local/bin/link_logs.sh"
+
+# debug output from server instance
+/usr/sbin/sshd -d -f /etc/ssh/sshd_config
+
+
+
+# gpg
+
+# create keypair. requires pinentry program and GPG_TTY environment var
+which pinentry
+GPG_TTY=`tty`
+export GPG_TTY
+gpg --gen-key
+
+# export key by name
+mkdir .gnupg/public_keys
+gpg --export -a -o .gnupg/public_keys/agould@ucop.edu Ashley
+
+# import key
+scp .gnupg/public_keys/agould@ucop.edu ashley@isis:~/.gnupg/public_keys/
+gpg --import .gnupg/public_keys/ashley\@isis.ucop.edu
+
+gpg --list-keys
+gpg --fingerprint
+gpg --sign-key 1C285240
+gpg --check-sigs 1C285240
+gpg --delete-secret-and-public-key 7ACE5F6B
+
+gpg -e -r agould@ucop.edu -o my_file.pgp my_file
+gpg -se -r agould my_file
+gpg -d -o my_file my_file.gpg
+
+gpg -e -o testfile stuff && rm stuff        # encrypt file and remove source
+gpg -d testfile				    # read encrypted file on stout
+gpg -d -o stuff testfile && chmod 600 stuff # decrypt into editable copy
+
+# verify tarball
+mkdir ~/.gnupg/public_keys
+gpg --import rse.key.pgp-rsa.pub.txt
+gpg --verify mod_ssl-2.8.22-1.3.33.tar.gz.asc mod_ssl-2.8.22-1.3.33.tar.gz
+
+
+
+
+
+# grep
+grep Linux file*.{txt,htm*}
+grep -v ^# /etc/ppp/options | grep -v ^$
+grep -v ^# httpd.conf | grep ^. > httpd.conf.nocomment
+grep -v ^# /etc/sysconfig/SuSEfirewall2 | egrep  [^[:space:]]
+grep -v ^# /etc/sysconfig/SuSEfirewall2 | grep ^.
+
+if [ `ps aux | grep fetchmail |grep -v grep |wc -c` -gt 0 ]; then
+
+find /web/www-data/ -type f -perm -111 -user jbertsch | grep -v cgi-bin |egrep ".sh$|.php$|.cgi$|.pl$|.py$"
+
+find /web/www-data/ -type f -perm -111 -user jbertsch | egrep -v "cgi-bin/|opt/" |egrep -v  ".sh$|.php$|.cgi$|.pl$|.py$" > jons_suspect_executables
+
+find /web/www-data/ -type f -perm -111 -user jbertsch | grep -v cgi-bin | egrep ".sh$|.php$|.cgi$|.pl$|.py$" > jons_scripts_outside_cgi-bin
+
+find /web/www-data/ -type f -perm -111 -user jbertsch | grep -v cgi-bin |egrep ".sh$" > jons_.sh
+
+# this one is a gem for finding intrussion attemps in apache logs:
+for file in `ls -1 access*`; do echo $file;  zgrep POST $file |grep .php |awk '{print $7}' |sort|uniq; echo;done
+
+
+
+# egrep
+egrep -n [^[:print:]] agersten.20050717 |cat -A 	# show non-printables
+grep  From: agersten.20050717 |egrep  [^[:print:]] |cat -A	# bad From lines
+egrep ^[:cntrl:] agersten.20050717 |head|cat -A		# lines start with ctrl
+egrep -v "^#|^$|[[:space:]]*#" httpd.conf > httpd.conf.nocomment
+zcat messages-20060111.gz | egrep -v "pure-ftpd|SFW2|Illegal user|illegal user|NOUSER" | less
+
+
+# grepmail
+grepmail  qla2300 -i ~/Mail/research > ~/Mail/qla2300  #creates a new mailfolder
+grepmail -d today Mail/* > Mail/tmp/today
+grepmail -h "^From.*itus@ucop.edu" webprod > grepmail/kim.titus
+grepmail -h "^To.*itus@ucop.edu" webprod > grepmail/kim.titus
+grepmail -d "after 12/31/2007" unixgroup > unixgroup.2008
+grepmail -d "before 1/1/2008" unixgroup > unixgroup.2007
+
+
+
+
+
+# find
+info Finding Files
+
+# make a list of all files in the ./webrt/Admin directory that are not
+# part of any CVS directory/name and are not .jpg
+find ./webrt/Admin  -path '*CVS*' -prune -o -name CVS -prune -o -name '*jpg' -prune -o -type f -fprint /tmp/webRT.filelist 
+
+find . -type f -exec chmod 666 \{} \;
+find . -type d -exec chmod 777 \{} \;
+find . -gid 16 |xargs chown .dialout
+find . -mtime -1 -type f -print0 | xargs -0 tar rvf "$1.tar"
+find /home/ashley -type f -print0 |xargs -t -0 chmod 644|tee tmp/find.output
+find . -name *pussy* -exec rm  \{} \;     # tim beloney had a virus
+find /var/spool/postfix -name 2879026BE0 | xargs postcat
+
+find /etc -newer /etc/resolv.conf.bak -type f -print0  |xargs -0 tar rvf "etc_backup.tar"|tee /tmp/find.output
+
+cd / ; find -mount | cpio -oc --block-size=BLOCK-SIZE -O/dev/st0
+
+find . -maxdepth 1 -type f | xargs ls -l
+find . -maxdepth 1 -type f -user ueruser
+ mv `find . -maxdepth 1 -type f -user ueruser` welcomepage/
+
+touch -t 01251100 timestamp
+find . -type f -newer /root/tmp/timestamp |xargs du -h > /tmp/newfiles
+find . -type f -size +100000k -print
+find . -type f -mtime +183 |xargs rm
+
+find /web/www-data/ -type f -mtime -365 -user apache -print0 |xargs -0 \
+grep "CGI-Telnet Version 1.0 for NT and Unix"
+
+# locateing hardlinks
+ find . -inum 4711
+ find . -printf "%i\t%p\n"
+ find . \! -type d -printf "%i\t%p\0" | perl -lp0e 's/\n/\\n/g' | sort
+
+# find all suid/sgid files
+find / /usr /home /tmp /var -xdev -perm +6000 -ls
+
+# find files with spaces in the name
+find /tmp | xargs egrep "[[:space:]]"
+
+# clean permissions on web1:
+find /web/www-data/ -group users -perm -20 -print0 | xargs -r -0 chmod g-w
+find /web/www-data/ -perm -2 -print0 |xargs -r -0 chmod o-w
+
+#  exclude files that already have the correct permissions and will batch the
+#  found files into a single chmod command +(note the plus sign instead of a
+#  semicolon):
+find /var/www -type f ! -perm 0644 -exec chmod -v 644 {} +
+
+
+
+
+
+# xargs
+ls *.c | xargs -n1 -i cp {} backups/{}.bak
+
+
+
+# tar
+
+# tar flags don't need to be preceeded by a hyphen
+tar tf infosearch4.tar		# list contents of infosearch4.tar
+tar cvf tarfile.tar .		# create archive of current directory
+cd $UNTARDIR
+tar xvf tarfile.tar		# extract archive into current directory
+tar cvf /tmp/sld_cd2.tar /media/cdrom 	# tar up contents of a mounted cd
+
+tar zxvf tarball.tar.gz		# ways to extract compressed tarballs
+zcat tarball.tar.gz | tar xv
+tar xvfI tarball.tar.bz2
+bzcat tarball.tar.bz2 | tar xv
+
+# Move entire file tree from one directory to another
+(cd /source/directory && tar cf - . ) | (cd /dest/directory && tar xpvf -)
+
+# Backs up all files in current directory modified within last 24 hours
+tar cvf - `find . -mtime -1 -type f -print` > $1.tar
+find . -mtime -1 -type f -print0 | xargs -0 tar rvf "$1.tar"
+
+# copy a directory's contents from one disk to another, while preserving the
+# dates, modes, owners and link-structure of all the files therein
+cd sourcedir; tar -cf - . | (cd targetdir; tar -xf -)
+cd /media/cdrom; tar -cvf - . | ( cd /mySPs/SP3; tar -xf - )
+
+# backup of ogg files created since '/mnt/ogg/something_corporate/' was created
+find ogg -newer /mnt/ogg/something_corporate/ -type f -print0 \
+ | xargs -0 tar rvf "/mnt/saved_oggs.tar" |tee /tmp/ogg/ogg.log
+
+# full backup of root filesystem to another host
+tar cvf - / | ssh root@node1.ashnet "dd of=/local/node0.tar"
+
+# find all apache logs for a given day and tar them up
+tar cvf apache_accesslogs.20050125.tar `find /var/log/httpd  -type f |xargs zgrep -l "25/Jan/2005"`
+tar cvf apache_errorlogs.20050126.tar `find .  -type f |xargs zgrep -l "Jan 26"`
+
+ftp3:/ftphome # tar zcvf ftphome-20060606.tgz --exclude=ftphome-20060606.tgz /ftphome/ |tee /tmp/tar-ftphome.log
+
+
+
+
+
+# rsync
+
+# a simple backup
+rsync -av --exclude=".." ~/* ~/.* tbeloney@ganesh:~/
+
+# gets all the .files but not .. 
+rsync -av radha:/home/ashley/.[!.]* /home/ashley/ 
+
+# backup my homedir on isis to osiris
+rsync -av  --delete --exclude=".." --exclude=".mozilla/**/Cache"  --exclude=".mozilla/**/lock" --exclude=".unison/backup" --exclude ="OpenOffice.org1.1/user/temp/" --exclude=".Xauthority" /home/agould/* /home/agould/.* agould@osiris:
+/home/agould/
+
+# syncronize entire server baba-yaga to cold backup yaga using excludes file.
+# make a log
+baba-yaga:~> rsync -av --delete --update --exclude-from=/root/rsync.conf/excludes   /* root@yaga:/ |tee -a /tmp/rsync_log.$(date +"%y%m%d.%s")
+
+# use '-n' for dry run. logs what will get transfered 
+web1:~> rsync -n -av /web/www-data/* root@web4:/web/www-data/ |tee /tmp/rsync_dryrun
+
+# determin source file using 'find'
+web1:~> rsync  -av `find /web/www-data/ -maxdepth 1 -type f` root@web4:/web/www-data/
+
+
+# run from cron on web1
+su - jblauth -c "rsync -rltvze ssh --delete /var/log/httpd/ apollo.ucop.edu:/var
+/log/httpd/"
+
+# on aix
+rsync -rlptD -v -i --dry-run -e 'ssh -p 20050' /sasimage2/ uasother:/data/sasimage2/ > /home/slim/rsync_sasimage2_dry-run 2>&1
+
+# sync apache configs
+web1:/usr/local/apache/conf # rsync -essh -av --delete --exclude="httpd.conf*" ./* root@web4:/usr/local/apache/conf/
+
+
+# screen
+
+When starting up screen, I like to name my screens:
+screen -S <name>
+
+Create new console:
+ctrl-a c
+
+Switch to next console:
+ctrl-a n
+
+Switch to previous console:
+ctrl-a p
+
+List all windows:
+c-a "
+
+Detach current session:
+c-a c-d
+
+Kill current window:
+c-a c-k
+
+Monitor window for changes (useful if you are waiting for output to appear
+while you are in another window):
+c-a M
+
+To silence:
+C-a _
+
+Quit screen:
+c-a c-\
+
+Scroll back:
+c-a [
+
+to watch anther screen session
+screen; screen -x
+
+
+
+
+
+# augtool
+augtool print /augeas//error
+augtool> get /files/etc/inittab/5/action
+augtool> get /files/etc/inittab/5/action respawn
+augtool> save
+augtool> print /files/etc/inittab//action[. = 'initdefault']
+augtool> print /files/etc/inittab/*[action = 'initdefault']
+
+# --noload deactivates all known lenses to make augtool faster
+augtool --noload
+# json.aug is not loaded by default, set it up
+augtool> set /augeas/load/Json/lens Json.lns
+# Add to /home/bar/foo.json to the known files
+augtool> set /augeas/load/Json/incl /home/bar/foo.json
+# Load known files
+augtool> load
+augtool> print /files/home/bar/foo.json
+
+# editting controlm agent config
+augtool --noload
+# dump all existing nodes under Spacevars lens, or else we can set a new path
+augtool> rm /augeas/load/Spacevars/incl
+augtool> set /augeas/load/Spacevars/incl "/path/to/CONFIG.dat"
+augtool> load
+augtool> set /files/path/to/CONFIG.dat/CTMSHOST 'ps-ctm-qa-02'
+augtool> save
+
+# for single files
+augtool --noload --noautoload --echo
+augtool> set /augeas/load/xml/lens "Xml.lns"
+augtool> set /augeas/load/xml/incl "/tmp/foo.xml"
+augtool> load
+augtool> print /files/
+augtool> ls /files/
+augtool> ls /files/tmp/foo.xml/
+
+
+
+
+
+
+
+
+
+# ImageMagick
+import vm-install.png 		# screen capture (click on window)
+display vm-install.png 		# display image
+
+
+
+
+# unison
+
+unison -doc tutorial |less
+unison -doc topics
+unison -ui text /home/agould/tmp/ ssh://osiris//home/agould/tmp/
+unison -ui text /home/agould ssh://agould@osiris//home/agould/
+
+# if a named configfile exixts: ~/.unison/home.prf
+unison -ui text home -testserver
+unison -ui text home
+unison -ui text home -batch 2> /dev/null | tee ~/.unison/sync_home.`date +"%F"`
+
+
+
+
+# netcat
+  Try
+netcat -lp 20000 | tar xfvvp -
+  on the target system (here called t200), then run (on the sender system):
+tar cfvv - some_files_you_want_to_be_transferred > /dev/tcp/t200/20000
+
+
+
+
+
+# mkisofs
+
+#To create an iso image do:
+mkisofs -v -r -o imagename.iso path
+
+# make boot disk for sles9 with modified linuxrc
+mkisofs -p "CD-Team, http://www.suse.de/feedback" -P "SuSE Linux AG, suse@suse.de" -r -J -f -pad -no-emul-boot -boot-load-size 4 -boot-info-table -b boot/loader/isolinux.bin -c boot/boot.catalog -hide boot/boot.catalog -hide-joliet boot/boot.catalog -A "SUSE-Linux-SLES-i386-9#0" -V SU90.001 -o tmp/NEW-CD1.iso ./SLES9-CD1 
+
+mkisofs  -r -J -f -pad -no-emul-boot -boot-load-size 4 -boot-info-table -b boot/loader/isolinux.bin -c boot/boot.catalog -hide boot/boot.catalog -hide-joliet boot/boot.catalog  -V SU90.001 -o tmp/NEW-CD1.iso ./SLES9-CD1 
+
+# create the iso image with isolinux as loader.
+# The catalogue file will be written into boot.cat.
+mkisofs -o $IMAGENAME -b isolinux/isolinux.bin -c isolinux/boot.cat \
+ -no-emul-boot -boot-load-size 4 -boot-info-table -l -R -r $IMAGEDIR
+
+isoinfo -d -i <path to iso>
+
+
+
+
+## Development tools
+
+# getting a core dump
+ulimit -c unlimited
+  bad_command -> seg fault -> (core dumped)
+file core 	# example is perl file
+gdb perl core                                                           
+
+# monitoring
+vmstat 5 3
+
+nohup bash -c 'while sleep 30 ; do ( date ; vmstat ; echo ; cat /proc/meminfo ; echo ; cat /proc/slabinfo ) >> bug43633.olh.memlog ; done'
+
+watch -n 60 "grep -E '^(size-32|buffer_head|bio[[:space:]]|biovec-1|crq)' /proc/slabinfo ; vmstat"
+
+# making, applying patches
+diff -Naur file.orig file.new
+
+
+# kernel
+root@persephone:/usr/src/linux > make menuconfig
+/proc/config.gz
+zcat /proc/config.gz |less
+
+# rcs
+co -l
+ci -u
+rlog
+rcs dif
+
+enable rcs: 
+wget --passive ftp://ftp.suse.com/pub/suse/i386/9.1/suse/i586/rcs-5.7-860.i586.rpm
+
+
+# cvs
+cvs -d /data/cvs/newrepos init	# initialize a new repository
+export CVSROOT=/web/cvs		# designate the cvs root
+cvs checkout CVSROOT		# check out a module (into working directory)
+cvs add CVSROOT/newfile		# add a file 
+cvs commit			# commit changes to module
+# remote checkout over ssh
+CVS_RSH=/usr/bin/ssh
+cvs -d :ext:agould@cvs:/data/cvs/uascvs checkout ~/workdir/uascvs/
+
+
+# svn
+svn help
+svn help checkout
+
+svn co --username agould https://svn.ucop.edu/repos/unixgroup/centrify
+svn co https://svn.ucop.edu/repos/unixgroup/scripts
+svn co -r 98 https://svn.ucop.edu/repos/unixgroup/scripts  # checkout old rev
+svn co --username agould https://svn.ucop.edu/repos/unixgroup/cfengine /tmp/cfengine/
+svn mkdir linux/init_scripts
+svn add linux/init_scripts/*
+svn add lab			# adds everything in path "lab/"
+svn status
+svn ci
+svn log https://svn.ucop.edu/repos/unixgroup/cfengine
+svn diff -r 346:347 https://svn.ucop.edu/repos/unixgroup/cfengine
+
+
+# git
+git diff		# diff between last commit and non-cached changes
+git diff --cached	# diff between last commit and cached changes
+git diff HEAD^ HEAD	# between curent HEAD and previous commit
+git diff HEAD^^ HEAD	# between curent HEAD and previous 2 commits
+git diff a04cbd HEAD	# between curent HEAD and commit number a04cbd
+
+
+
+
+
+# Perl
+perl -MCPAN -e shell
+CPAN> install DB_File
+cpan> i /XML-Simple/		# search a package
+cpan> install G/GR/GRANTM/XML-Simple-2.18.tar.gz	# install it
+
+
+
+# Ruby
+gem help
+gem help commands
+gem help list
+gem list --local
+gem list --details
+gem search hiera-gpg --remote
+gem install hiera-gpg
+gem list --details hiera-gpg
+gem uninstall hiera-gpg
+
+
+
+
+
+
+
+
+## sysadmin
+
+grep -c processor /proc/cpuinfo		# how many CPU cores
+dmidecode --type 4 | grep -c Socket	# how many CPU soccets
+
+ulimit -a
+id
+fuser
+fuser -mv /web.old/	# who is using anything under /web.old mount point
+lsof |grep agould
+lsof |grep <pid>
+lsof |grep deleted	# show deleted files with open filehandle
+lsof -i :portnum
+lsof |less -S
+lsof /mnt		# open file on filesystem /mnt
+lsof -p 1481		# information about a particular process
+lsof -i -nP		# listening ports, no hostname/service lookup
+lsof -i -nP | grep ^named
+lsof /logs | awk 'NR == 1; NR > 1 {print $0 | "sort -r -n -k 7"}'
+
+pstree -anup
+pstree -paunhG
+pstree -pl
+
+ps auxw -H
+ps -eLo user,pid,ni,pri,%cpu,psr,%mem,vsz,rss,stat,wchan:14,comm|less
+
+
+# the mother of all process monitoring commands
+ps -eLo user,pid,sess,tid,thcount,ni,pri,%cpu,psr,%mem,vsz,rss,bsdstart,bsdtime,stat,wchan:18,args|less
+ps -eLo user,pid,sess,tid,thcount,ni,pri,%cpu,psr,%mem,vsz,rss,bsdstart,bsdtime,stat,wchan:18,comm|less
+
+
+pkill -TERM -n top 	# sent TERM signal to the most recent running top
+pkill -nf /usr/lib64/sa/sadc # most recent sadc, search cmdline for pattern
+
+pgrep -u agould
+pgrep httpd
+pgrep -nf top
+
+
+# accounting
+ac -dp
+sa
+
+# chmod
+chmod ugoa+wrxts file|dir     -rwsrwsrwt|drwsrwsrwt 
+chmod 7777     file|dir       -rwsrwsrwt|drwsrwsrwt
+chmod 1777     file|dir       -rwxrwxrwt|drwxrwxrwt
+chmod u+rs,u-w,g+rws,o= dir   dr-srws---
+ 
+
+# acl
+
+mount  -o acl	/tmp			# enable acls for filesystem /tmp
+ftp3:~ # mount -o remount -o acl /ftphome
+ftp3:~ # grep ftphome /etc/mtab 
+/dev/system/ftphome /ftphome reiserfs rw,acl 0 0
+ftp3:~ # setfacl  -R -m user:isclib:rwx /ftphome/
+ftp3:~ # setfacl -d -R -m user:isclib:rwx /ftphome/
+
+
+
+getfacl /tmp/acltest			# view acls on /tmp/acltest directory
+cp -p 					# copies ACLs between files.
+
+setfacl -m user:isclib:rwx acltest/	# give user isclib full rights 
+setfacl -x user:isclib: acltest/	# remove this user's acl
+setfacl -d -m user:isclib:rwx acltest/	# make acl the default for new subdirs
+setfacl -k acltest/			# remove default acl for directory
+setfacl -b acltest/			# remove all acls for directory
+
+setfacl -m group:iscgrp:rwx acltest/	# give group iscgrp full rights 
+setfacl -m group:iscgrp: acltest/	# revoke group acl
+
+setfacl -R -m user:isclib:rwx acltest/	# modify acl recursively for directory
+setfacl -d -R -m user:isclib:rwx acltest/ # set default acl (recursively)
+setfacl -R -x user:isclib: acltest/	# revoke this acl recursively
+setfacl -k -R user:isclib: acltest/	# revoke default acl also (must do both)
+
+getfacl --skip-base -R acltest/ > acldump # make plain text dump of ACLs
+setfacl --restore=acldump		  # restore acls from dump
+
+
+
+# user admin
+cp -a /etc/skell/. /home/username
+
+find /home -user biff | xargs chown zappo
+mv /home/biff /home/zappo
+
+sudo useradd -m -c"Sundar Thirue" -u 4008 sthiru	# create user
+usermod -G users,dialout ashley  # add ashley to dialout group
+getent passwd sthiru		 # get user's passwd data
+
+newgrp dialout		         # make dialout ashley's current group
+groupmod -g 98 dialout           # change gid of group dialout
+groups agould		         # list all groups ashley's in currently
+
+passwd -e kdonahue		# force pw change at next login
+passwd -S ashely		# display passwd status
+passwd -d ashely		# remove passwd
+passwd -l ashely		# lock account ("!" in shadow hash field)
+
+chage -l  kdonahue		# list pw aging info
+chage -E 2006-03-01 kdonahue	# set account to expire Mar 1
+chage -M 90 sthiru		# set passwd to expire 90 days from last change
+
+faillog -a
+pam_tally			# show failed login count for all users
+pam_tally --reset		# reset failed login count for all users
+pam_tally --user agould		# check failed login count for agould
+pam_tally --reset=0 --user agould	# zero agould's failed login count
+
+
+
+
+
+
+
+
+
+
+## System tools
+
+# system monitoring
+procinfo
+lsdev
+cat /proc/cpuinfo
+cat /proc/uptime
+cat /proc/meminfo
+cat /proc/slabinfo
+egrep 'dentry_cache|inode_cache' < /proc/slabinfo
+
+# top
+top -bd 1 > /tmp/topdump
+top -H (M f j W)	  # creates .toprc file showing threads/cpu
+top -b |tee /tmp/top.out  # run in batch mode using .toprc file
+
+vmstat 1 1
+iostat  -k -x sda sdc 2
+iostat  -k -p sda sdc 2
+free -m
+strace
+strace -p <pid>		# attach to running job
+strace -o <outfile> -ff -p <pid>
+strace -e open getent passwd	# what files get opened
+ltrace ps -ax 2>&1 |tee  /tmp/ltrace.out
+last			# user logins since last boot
+last reboot		# date the system was last rebooted
+uptime			# time running since last boot
+init 2 && init $(runlevel | cut -d" " -f 2)
+telinit q		# reread inittab
+stat -f /home
+stat ~/.bashrc 
+sysctl -w net.ipv4.ip_no_pmtu_disc=1
+sysctl kernel.shmmax
+sysctl -w kernel.shmmax=8589934592
+sysctl kernel.msgmni
+sysctl -A|grep ip_conntrack_max
+sysctl net.ipv4.netfilter.ip_conntrack_max
+sysctl net.ipv4.netfilter.ip_conntrack_count
+sysctl -w net.ipv4.netfilter.ip_conntrack_max=32768
+sysctl -a | egrep 'msg|shm|sem'
+
+ipcs -l
+ipcs -ma		# show shared memory segments, get shmid
+lsof | egrep "1329725441|COMMAND"	show pid of processes using shmid
+
+
+vmstat Monitor virtual memory
+free Display amount of free and used memory in the system.
+pmap Display/examine memory map and libraries (so). Usage: pmap pid
+time -v date Show system page size, page faults, etc of a process during execution. Note you must fully qualify the command as "/usr/bin/time" to avoid using the bash shell command "time".
+cat /proc/sys/vm/freepages Display virtual memory "free pages".
+One may increase/decrease this limit: echo 300 400 500 > /proc/sys/vm/freepages
+cat /proc/meminfo Show memory size and usage.
+
+# sar
+sar -f /var/log/sa/sar.2008_08_19
+sar -r -f /var/log/sa/sa.2008_08_19 	# memory stats
+sar -B 					# page swapping stats
+			# generate sar data every 20 seconds for 10 hours
+/usr/lib64/sa/sadc -F 20 1800 /var/log/sa/sa21.testing &
+
+
+# debugfs - recovering deleted files
+echo lsdel | debugfs /dev/hda6 > /tmp/lsdel-output	# list of deleted inodes
+debugfs:  cat <32605>					# recover inode 32605
+debugfs:  dump -p <32605> /tmp/recovered_file		# write file to disk
+
+# kernel 
+lsmod
+depmod -a
+modprobe my_modulename
+modinfo my_modulename
+
+# devices
+hwinfo
+hdparm -i
+hdparm -t /dev/hda
+hdparm -itT /dev/hda
+sg_scan -i
+sg_map -i
+scsiinfo -l
+stty sane 9600 </dev/ttyS0
+setserial -a /dev/ttyS0
+cat /proc/tty/driver/serial
+cat /proc/scsi/sg/device_strs
+
+# parted
+parted /dev/sdf print			# print partition table
+parted /dev/sdf mklabel msdos		# create disk label
+parted /dev/sdf mkpart primary 0 32	# create 32 gb partition
+parted /dev/sdf set 1 raid on		# set partition type to fd (linux raid)
+parted /dev/sdf check			# check partitions (fstype)
+parted /dev/sdf rm 1			# remove partition /dev/sdf1
+
+parted $disk mklabel msdos
+end=$(parted $disk print |grep geometry | awk -F- '{print $2}')
+parted $disk mkpart primary 0 $end
+mke2fs -j ${disk}1
+tune2fs -L $label ${disk}1
+
+
+sfdisk -l -uM /dev/sda
+sfdisk -l -uM /dev/sdb
+# create single partition of type LVM(8e) using whole disk
+sfdisk -q /dev/sdc << EOF
+,,8e
+EOF
+
+echo ,,8e | sfdisk -q /dev/sdc
+echo ,,8e | sfdisk -q /dev/sdb
+echo ,,8e | /sbin/sfdisk -q /dev/sdd
+echo ,,8e | /sbin/sfdisk -q /dev/sde
+echo ,,8e | /sbin/sfdisk -q /dev/sdf
+
+
+
+
+# iscsi
+iscsiadm --mode discoverydb --type sendtargets --portal 192.168.0.254 --discover
+iscsiadm --mode node --targetname iqn.2010-09.com.example:rdisks.server3 --portal 192.168.0.254:3260 --login
+scsiadm --mode node
+# show the device uuid for a partition
+blkid /dev/sda1
+# fstab entry requires mount option _netdev
+UUID=295e4c5a-9250-4723-b548-62341f4e41c5 /mnt/iscsi ext4 _netdev	1 2
+
+
+# cryptsetup
+cryptsetup luksFormat /dev/sda1
+cryptsetup luksOpen /dev/sda1 iscsi-secret
+mkfs.ext4 /dev/mapper/iscsi-secret 
+dd if=/dev/urandom of=/root/keyfile bs=1M count=1
+cryptsetup luksAddKey /dev/sda1 /root/keyfile
+chmod 600 /root/keyfile
+cryptsetup luksUUID /dev/sda1
+  8e40e29f-4bdd-4500-a67b-deaafdfa115a
+cat /etc/crypttab
+  iscsi-secret UUID=8e40e29f-4bdd-4500-a67b-deaafdfa115a /root/keyfile
+cryptsetup luksClose /dev/mapper/iscsi-secret
+service netfs restart
+
+
+
+reiserfsck --fix-fixable /dev/hdaX
+reiserfsck --rebuild-sb
+reiserfsck --rebuild-tree 	
+# wipe drive
+dd if=/dev/urandom of=/dev/sda bs=4096k && dd if=/dev/zero of=/dev/sda bs=4096k
+dd if=/dev/urandom of=/ftphome/SPACER bs=4096k count=20
+cat /proc/scsi/scsi
+
+# bind a device file into a chroot jail, requires devfs
+mount --bind /dev/null /gaol/dev/null	
+
+# swap space
+mkswap /dev/hdxx
+swapon /dev/hdxx
+cat /proc/swaps
+
+# swapfile
+dd if=/dev/zero of=swapfile bs=1024 count=65536
+mkswap swapfile
+swapon swapfile
+
+
+# kexec
+kexec -l /boot/vmlinuz --append=root=/dev/sda2 --initrd=/boot/initrd
+kexec -e
+
+# grub
+grub > find /boot/grub/stage1	# check grub can find boot device
+grub > device (hd0) /dev/sda	# map drive to a grub identifier
+grub > root (hd0,3)	# tell grub root partition is on /dev/hda4
+grub > setup (hd0)	# install stage1 boot loader on mbr of hda
+
+#!/bin/sh
+cat << EOF > /boot/grub/device.map
+(fd0)  /dev/fd0
+(hd0)  /dev/sda
+EOF
+/usr/sbin/grub-install --force-lba --no-floppy /dev/sda
+
+
+# lvm
+
+# query commands
+pvs
+vgs
+lvs
+lvs -o +devices			# shows which PV it's on
+vgdisplay -v vg0
+pvscan
+vgscan
+lvscan
+
+# create commands
+pvcreate /dev/md0 /dev/sda3 /dev/sdc
+vgcreate vg0 /dev/md0
+vgcreate vg1 /dev/sda3 /dev/sdc
+lvcreate -n music -l 8677 vg0
+lvcreate -n dance -L 5GB vg1
+lvcreate -n other -l 100%VG vg2
+lvcreate -n more -l 100%FREE vg2
+
+# modify commands
+vgextend vg0 /dev/md2
+vgchange -a y vg0
+lvchange -a n /dev/vg1/backup
+
+# remove commands
+lvremove -v /dev/vg1/backup
+lvremove -f data0		# all lv in vg data0, no confirmation
+vgremove data0			# remove vg after removing all lv
+pvremove /dev/sdc /dev/sdd	
+
+# reiser filesystems on LV
+lvcreate -n music -l 8677 vg0
+mkreiserfs /dev/vg1/music
+
+# extending
+lvextend -l +9000 /dev/data1/urchin
+resize_reiserfs /dev/data1/urchin
+
+# reducing
+umount /urchin
+resize_reiserfs -s 50G /dev/data0/urchin
+lvreduce -L 50GB /dev/data0/urchin
+
+# ext3/ext4 resizing
+lvextend -l +100%FREE /dev/data0/db2share
+[e2fsck -f /dev/data0/db2share] # must not be mounted
+resize2fs /dev/data0/db2share
+# or
+lvresize --resizefs --extents +100%Free /dev/u01/homsys
+
+# reducing ext4
+umount /logs
+e2fsck -f /dev/data0/logs
+e2fsck -f /dev/data0/logs
+lvreduce -L 4GB /dev/data0/logs
+mount /logs
+
+
+# migrating to new physical volume
+pvmove -i 5 /dev/dm-23 /dev/dm-26
+pvmove -i5 -v -n data0/tenar-swap /dev/dm-0 /dev/dm-8
+pvmove -i5 -v -n db2logs/logs /dev/sdl
+vgreduce data1 /dev/dm-23
+
+# replacing vdisks using LVM
+# after adding a vdisk and making a single partition:
+vgextend data0 /dev/sdd1
+lvs -o +devices
+pvmove -v -i5 /dev/sdc /dev/sdd1
+lvs -o +devices
+vgreduce data0 /dev/sdc
+pvremove /dev/sdc
+
+# resizing PVs
+# vdisk extented in VMWare
+# raw disk PVs only.
+fdisk -s /dev/sdb	# get size in blocks
+echo 1 > /sys/block/sdb/device/rescan
+pvresize /dev/sdb
+
+
+
+
+
+
+
+
+## ext3
+# create an ext3 filesystem
+mke2fs -j /dev/sda1
+
+# ext3/ext4 resizing
+lvextend -l +100%FREE /dev/data0/db2share
+[e2fsck -f /dev/data0/db2share] # must not be mounted
+resize2fs /dev/data0/db2share
+# or
+lvresize --resizefs --extents +100%Free /dev/u01/homsys
+lvresize -rL 100GB /dev/data0/data
+lvresize -rl +100%Free /dev/vg0/var
+
+
+# other ext3 tools
+tune2fs
+e2fsck
+dumpe2fs
+
+
+
+# mdadm
+cat /proc/mdstat 
+mdadm --detail /dev/md0
+# creating an raid1 array with one device missing:
+mdadm --create /dev/md0 -c 4 -l 1 -n 2 /dev/sdc1 missing
+# Create raid1 array with partitions /dev/sdb1, /dev/sdc1; chucksize 32k:
+mdadm --create /dev/md1 --chunk=32 --level=1 --raid-devices=2 /dev/sdb1 /dev/sdc1
+# add device to array
+mdadm /dev/md0 -a /dev/sdb1
+# remove an array
+mdadm --stop /dev/md1
+# rebuild an array 
+mdadm -As /dev/md0
+# remove one disk from an array
+mdadm --fail /dev/md0 /dev/sdf
+mdadm --remove /dev/md0 /dev/sdf
+
+mdadm --add /dev/md0 /dev/sdf1
+
+
+
+web3:~ # history |grep mdadm
+  372  mdadm --create /dev/md0 -c 4 -l 1 -n 2 /dev/sdc /dev/sdd
+  411  mdadm misc -q /dev/sdc
+  412  mdadm --query /dev/sdc /dev/sdd
+  414  mdadm --detail /dev/md0
+  420  mdadm --examine /dev/sdc /dev/sdd
+  421  mdadm --examine /dev/sdc /dev/sdd /dev/md0
+  425  mdadm --assemble --scan /dev/md0
+  426  mdadm --assemble --scan md0
+  427  mdadm --assemble  /dev/md0
+  428  mdadm --assemble  /dev/md0 /dev/sdc /dev/sdd
+  435  vi /etc/mdadm.conf
+
+web3:~ # cat /etc/mdadm.conf
+DEVICE /dev/sdc /dev/sdd
+ARRAY /dev/md0 devices=/dev/sdc,/dev/sdd
+
+
+# for booting off raid device add kernal param:
+--metadat=0.90
+
+
+
+# multipath
+lsscsi
+/etc/init.d/boot.multipathd start
+/etc/init.d/multipathd start
+multipath -l
+/sbin/multipath -l -v3
+multipath -F		# flush all unused multipath device maps
+# deleting faulty paths:
+for i in '1:0:1:0' '1:0:1:1' '1:0:1:2' '1:0:1:3'; do echo 1 > $i/delete; done
+
+# rescan busses:
+rescan-scsi-bus.sh -w			# scan targets 1 - 15
+
+#sles10
+ls -l /sys/class/fc_host/
+echo 1 > /sys/class/fc_host/host1/issue_lip
+echo 1 > /sys/class/fc_host/host2/issue_lip
+echo "- - -" > /sys/class/fc_host/host1/scan
+echo "- - -" > /sys/class/fc_host/host2/scan
+
+# sles9:
+ls -l /sys/class/scsi_host/
+echo 1 > /sys/class/scsi_host/host1/issue_lip
+echo 1 > /sys/class/scsi_host/host2/issue_lip
+echo "- - -" > /sys/class/scsi_host/host1/scan
+echo "- - -" > /sys/class/scsi_host/host2/scan
+
+# qlogic:
+echo "scsi-qlascan" > /proc/scsi/qla2xxx/1
+echo "scsi-qlascan" > /proc/scsi/qla2xxx/2
+/bin/rescan-scsi-bus.sh
+
+
+
+
+
+# quota
+yast --install quota
+/dev/system/images    /images reiserfs  acl,user_xattr,usrquota  1 2
+mount -o remount,usrquota /images
+quotacheck -avugm
+/etc/init.d/boot.quota start
+sudo quotaon -a
+sudo quotaon -p -a
+edquota -f /images agould
+repquota -a
+quota -u agould
+
+
+
+# samba mount
+mount -t cifs -o user=ashleyg,pass=xxxxxxxx,file_mode=0644,dir_mode=0755 //p-irc-cntrfy01/centrify /samba
+
+# Using /etc/init.d/smbfs script:
+agould@isis:~> sudo tail -2 /etc/samba/smbfstab 
+//p-irc-cntrfy01/centrify /samba cifs user=ashleyg,pass=xxxxxxxx,file_mode=0644,dir_mode=0755
+agould@isis:~> sudo rcsmbfs start
+Mount SMB/ CIFS File Systems from /etc/samba/smbfstab 
+//p-irc-cntrfy01/centrify on /samba type cifs .                      done
+
+
+
+
+# RPMs
+rpm -ihvv yada.rpm                      basic install
+rpm -Uhvv yada.rpm                      upgrade 
+rpm -Uhvv --oldpackage --test package   can I downgrade to package
+rpm -Uhv --oldpackage package		Do the downgrade
+
+rpm -q  packagename                     Check version
+rpm -qi packagename                     get info
+rpm -qf `which executable`              what package does executible belong to 
+rpm -qi $(rpm -qf $(which exicutable))  fancy version
+rpm -qf /path/filename                  what package does filename belong to
+rpm -qa |grep string                    what was that package called? 'string'?
+rpm -qf packagename                     show me the docs on package
+rpm -qpl packagename  yada.rpm          list all files in uninstalled rpm
+rpm -q --whatrequires libstdc++.so.5    what packages want this ugly library
+rpm -qR packagename                     what packages does this package need
+rpm -q --changelog apache-1.3.26	list updates to this package
+rpm -Va | sort				verify integrity of installed packages
+rpm --rebuilddb				rebuuild rpm database
+rpm --import /<key-path>/GPG-KEY.pub	import pgp key into rpm database
+rpm -e --allmatches gpg-pubkey-e1a157d8-4caa5b81
+
+rpmbuild -bb snort.src.rpm		build a source package
+rpmbuild -ba  systemimager.spec		build all
+rpmbuild --sign -ba  systemimager.spec	build all, sign with my gpg key
+					in ~/.rpmmacros: %_gpg_name <key_id>
+rpmbuild -bi --short-circuit blah.spec	just run the install
+
+hint:
+Take the src.rpm for 9.1, remove the BuildRequires line in the spec
+file, rpmbuild -ba, and let it run on 9.0
+
+for pak in $(rpm -qa) ; do echo "paket: $pak" ; rpm -V $pak ; done >
+/tmp/rpmcheck.txt 2>&1
+rpm -qa --qf="%{DISTRIBUTION} %{NAME}-%{VERSION}-%{RELEASE}\n"
+rpm -qa --queryformat="%-30{NAME}\t%{VERSION}-%{RELEASE}\t%{DISTRIBUTION}\n" | grep glibc
+rpm -qa --queryformat "%-30{NAME} %{DISTRIBUTION} %{VERSION}-%{RELEASE}\n"
+
+rpm -qa --queryformat="%{NAME}\n" |sort|uniq > /tmp/packages-Installed
+egrep -h -v "^[^[:alpha:]]|yast2-trans-|32bit|64bit|x86" /var/adm/YaST/SelDB/Base-System.sel /var/adm/YaST/SelDB/YaST2.sel |sort|uniq > /tmp/packages-Minimal
+diff /tmp/packages-Installed /tmp/packages-Minimal | grep \< |awk '{print $2}' > /tmp/packages-Installed_minus_Minimal
+
+# find files not part of any rpm
+for file in $(find / -xdev -type f); do rpm -qf $file | grep "not owned by any package" 2>&1 >/dev/null && echo $file; done | tee /tmp/no_rpm-root 
+
+
+
+# RedHat only
+chkconfig --level 35 <deamonName>on
+chkconfig --list
+chkconfig -a inetd
+service MailScanner stop
+e2label
+tune2fw -l
+syntax of mkinitrd:
+command      imagename                           kernelversion
+mkinitrd -v /boot/initrd-2.4.20-28.8-ashley.img 2.4.20-28.8-ashley
+
+
+# SuSE only
+insserv /etc/init.d/
+online_update -u http://user:password@sdb.suse.de/download/
+# yast2 
+# will download all available patches without installing them 
+online_update .auto.get
+# will install all available patches 
+yast2 online_update .auto.install
+# install package rcs
+yast2 -i rcs
+
+# what Service Pack are we running?
+SPident -vv
+
+
+# Debian
+dpkg -L heartbeat | fgrep doc		# find docs on a package
+
+# redcarpet
+rug pa NovellVPN			# list packages in a channel
+rug se opendesktop-vpnsetup		# search for a package
+rug in opendesktop-vpnsetup		# install app
+
+rug lu					# list available updates
+rug up					# Install all updates from all channels
+rug in <rpm name>			# Install specific updates
+
+rug ping			# Pings the ZMD deamon running on the client
+rug sl				# service list
+rug sa -t zypp http://penny/SLES10-SP2-x86_64/patches/ SLES10-SP2-x86_64
+				# service-add named SLES10-SP2-x86_64
+				# service-delete by name, can be by # also
+rug sd 'SUSE Linux Enterprise Server 10 SP1'
+rug sd --all -y			# delete all services and dont ask for confirm
+rug catalogs			# query what catalogs are available
+rug sub SLES10-SP2-x86_64	# subscribe to named catalog
+rug unsub SLES10-SP2-x86_64	# unsubscribe to named catalog
+
+
+# zypper
+zypper -h			# help menu, shows all commands
+zypper -h <command>  		# help menu for command
+zypper sl -d			# list repos, show details
+zypper addrepo -t rpm-md -f http://smt.ucop.edu/cdl/repo/cdlcustom/SLES11 CDL-SLES11-cdlcustom			# add repo with autorefresh enabled
+zypper sd CDL-SLES11-cdlcommon	# remove repo (service delete)
+zypper modifyrepo -r -a		# turn on auto-refreash for all repos
+zypper ref SLES11_UCOP_3rd-party # refresh on the spot
+
+zypper lu -t package		# list updates including type package
+zypper up -l -t package		# run update, accept licences, including type package
+
+zypper se -h			# help menu for search
+zypper se -r SLES11_UCOP_3rd-party	# list packages in named repo
+zypper se -s mysql		# Show all versions in each all repositories
+
+zypper rm MySQL-client		# remove package
+zypper in -n mysql-client	# install by exact name
+zypper in -r CDL-SLES11-SP1-Updates mysql-client # install from named repo
+
+
+
+
+
+
+# old zypper (sles10)
+zypper sl			# list registered services (repos)
+zypper sa <URI> <alias>		# add a service
+zypper sd <URI|alias>
+zypper --no-gpg-checks -n sd <URI|alias> # dont check gpg, dont ask questions
+
+
+
+
+# bullpen VPN client
+vpnc connect nmas -g bullpen.americas.novell.com -s NBMLDAP -u ashley
+vpnc stats
+vpnc disconnect
+
+
+# scpm
+scpm enable
+scpm  -f enable
+scpm active
+scpm list
+scpm rename default oak.suse.com
+scpm copy oak.suse.com dhcp
+scpm switch dhcp
+scpm reload
+
+
+
+
+# xen
+/etc/xen/scripts/network-bridge stop netdev=eth0
+/etc/xen/scripts/network-bridge start netdev=eth0
+
+
+
+
+## Network
+
+lsof -i :portnum
+cat /proc/net/dev
+cat /proc/sys/net/ipv4/ip_forward
+echo 1 > /prod/sys/net/ipv4/ip_always_defrag
+grep eth /etc/modules.conf
+ttcp -r
+ttcp -t reciever_hostname
+cidr
+spray
+mii-tool
+ethereal
+nmap -p 139,145 <ip>  and
+nmap -sU -p 137,138 <ip>
+
+cat /proc/sys/net/ipv4/ip_conntrack_max			# size of hash table
+echo 32768 > /proc/sys/net/ipv4/ip_conntrack_max	# set size of hash table
+cat /proc/sys/net/ipv4/ip_conntrack_buckets		# size of hash element
+cat /proc/sys/net/ipv4/netfilter/ip_conntrack_count	# number of tracked conn
+cat /proc/net/ip_conntrack|wc -l			# same
+cat /proc/net/ip_conntrack|less				# display connections
+sysctl -A|grep ip_conntrack_max
+sysctl net.ipv4.netfilter.ip_conntrack_max
+sysctl -w net.ipv4.netfilter.ip_conntrack_max=32768
+
+
+ifconfig  -a
+ifconfig  eth0 10.87.0.17  netmask 255.255.0.0
+ifconfig  eth0 down
+ifconfig  eth0 up          # only if this ip was up already since boot
+ifconfig  eth0 mtu 1480
+ifconfig  eth0:0   10.87.0.22  netmask 255.0.0.0
+
+route -n
+route add -host 10.87.0.197  dev eth0                        # 'dev' is optional
+route del 10.87.0.197					     # -host is default
+route add -net 10.87.0.0 netmask 255.255.255.0  eth0
+route del -net 10.87.0.0 netmask 255.255.255.0
+route add default gw 10.87.0.1
+route del default gw 10.87.0.1
+
+ip addr 
+ip addr add 10.87.20.31/24 dev eth0 brd +
+ip addr del 10.87.20.31 dev eth0
+ip addr add 10.87.1.17/16 dev eth0  label eth0:1
+ip addr del 10.87.1.17 dev eth0
+ip link show
+ip link set eth0 mtu 1480
+ip link set eth1  down
+ip route
+ip route add 10.87.0.0/24 dev eth0
+ip route add default via 10.87.0.1
+ip route add 10.87.240.0/24 via 10.87.0.1
+ip route del 10.87.240.0/24
+ip route del default
+
+# SuSE specific
+getcfg-all-info eth0
+ifup eth0
+hwup hwcfg-bus-pci-0000\:06\:08.1
+ifstatus bond0
+
+# bonding
+ifconfig bond0 128.48.101.40 netmask 255.255.255.0 broadcast 128.48.101.255 up
+ifenslave bond0 eth0 eth1
+cat /proc/net/bonding/bond0
+ip addr add 128.48.101.49/24 dev bond0 label bond0:1
+ip addr del 128.48.101.49/24 dev bond0
+
+
+
+arp -n
+arp -a
+arp -s 10.87.0.197 00:A0:CC:5B:0C:88
+arp -d 10.87.0.197
+
+ethtool eth0			# query settings on device
+ethtool -i eth0			# query driver info
+ethtool -s eth0 duplex full     # set duplex
+ethtool -s eth0 autoneg off     # force autonegotiation off
+
+netstat -rn			# routing table
+netstat -anp
+netstat -anp | grep LISTEN
+netstat -t -l | grep 5901
+netstat -e -e -v -p -l -n
+netstat -envelop
+
+tcpdump -i eth0
+tcpdump dst port 53 or src port 53 -vvv > /tmp/tcpdump.log&
+tcpdump -n host shiva.oak.suse.com > /tmp/tcpdump.log
+tcpdump dst port 53 or src port 53 -N -s 400 -vvv > tcpdump.dump
+tcpdump -n   host 10.87.0.25 and udp
+tcpdump dst port 22 or src port 22 and host shiva -i eth0
+tcpdump -n -i eth0 -s 0 -w dump.out src or dst port 80
+tcpdump -i en0 dst port 2025 or 2225 and not src net 128.48
+tcpdump -U -w buffer.dat -i eth0 src <IP_of_sending_PC> and port 25
+tcpdump -D
+man pcap-filter
+
+web1:~ # tcpdump -n -vv -s 384  not port 22 and src hades.ucop.edu or dst hades.ucop.edu
+tcpdump -n -vv -s 768  not port 22 and host hades.ucop.edu
+tcpdump -i vswif0 not host horus.ucop.edu and not port netbios-ns and not arp and not broadcast |tee /tmp/tcpdump.20100201
+
+getent hosts
+getent hosts ishi
+getent hosts ishi.ashnet
+getent passwd
+getent passwd ashley
+
+
+# dns tools
+dig MX misc.com
+dig +trace mail.sonic.net
+dig 1.0.10.10.in-addr.arpa PTR
+
+host  omail.objectified.com		# gives ip address
+host -t ns suse.com			# gives ns record
+host -t MX objectified.com		# gives MX record
+
+nslookup
+> set all
+> set q=ns
+> set q=mx
+> set debug
+> set d2
+> set nod2
+> set nodebug
+> ls ashnet
+
+dnsqry /server:m.gtld-servers.net. ns google.com.
+
+
+
+
+## Xen
+xm list
+xm console <domU-name>
+xm create -c <domU-name>
+xm shutdown <domU-name>
+xm migrate --live <domU id> <new dom0>
+# to escape console: Ctrl-]
+
+
+
+
+# selinux
+getenforce
+setenforce 0	# permissive mode
+tail /var/log/audit/audit.log
+sealert -a /var/log/audit/audit.log
+man -k _selinux
+
+man httpd_selinux
+semanage fcontext -l
+semanage fcontext --add --type httpd_sys_content_t '/web(/.*)?'
+semanage fcontext --add --type httpd_sys_script_exec_t '/web/cgi-bin(/.*)?'
+restorecon -Rv /web
+semanage port -l
+semanage port -a -t http_port_t -p tcp 8089
+getsebool -a | grep http
+
+semanage fcontext --add --type public_content_rw_t '/var/ftp/dropbox(/.*)?'
+
+getsebool -a | grep samba
+setsebool -P samba_enable_home_dirs on
+chcon -t samba_share_t /shared/school
+semodule -l
+
+# debugging shibboleth
+grep httpd_t /var/log/audit/audit.log | audit2why
+grep httpd_t /var/log/audit/audit.log | audit2allow -M sel_shibboleth
+semodule -i sel_shibboleth.pp
+
+
+
+## Network protocols
+
+# ntp
+date date  01281113 	# MMDDHHMM
+ntpnate ntp1.oak.suse.com
+hwclock --systohc
+hwclock --set --date "04:16:30"
+hwclock -uw		# same as above but using utc
+ntpq -p			# test against time server
+
+
+# nfs
+exportfs -v
+exportfs -a
+exportfs -ua
+exportfs -o ro :/data/ogg
+
+nfsstat -l
+nfsstat -o all
+showmount web1		# tells what clients are mounting a share on web1
+showmount -a
+cat /proc/mounts
+cat /proc/fs/nfs/exports
+cat /var/lib/nfs/etab
+cat /var/lib/nfs/rmtab
+
+
+# nis
+ypwhich			# tells what is my current yp server
+ypwhich -m		# shows all maps pushed on yp server
+ypcat passwd
+ypmatch ashley passwd
+yppoll passwd.byname
+rcpinfo -p
+rpcinfo -b mountd 3 | uniq
+
+
+# bind
+kill -HUP `/cat var/run/named.pid`n    # relaod the nameserver
+kill -ILL `/cat var/run/named.pid` # dumps statistics to /var/named/named.stats
+kill -USR1 `/cat var/run/named.pid` # writes debugging to /var/named/named.run
+kill -INT `cat /var/run/named.pid` # dumps internal database to ./named_dump.db
+
+ndc trace                   # writes debugging to /var/named/named.run
+ndc dumpdb                  # dumps internal database to ./named_dump.db
+
+
+# postfix
+postcat $(find /var/spool/postfix -name 4BDC83FE171) > errmail.txt
+cat errmail.txt |/usr/bin/formail -I "From " |strace /usr/lib/cyrus/bin/deliver -e -r Root-Meldungen -a cyrus -m Root-Meldungen 
+web1:/var/log # mailq |grep -C1 127.0.0.2|egrep "^[[:alnum:]]" |awk '{print $1}'
+
+
+# exim
+
+/usr/share/doc/exim4-base/README.Debian.gz
+cat /etc/mailname
+find /etc/exim4/conf.d/
+dpkg-reconfigure exim4-config  # re-run preconfigureation scripts
+  Split configuration into small files?		yes
+  General type of mail configuration:
+	mail sent by smarthost; received via SMTP or fetchmail
+  IP address or host name of the outgoing smarthost:	mail.sonic.net
+  Hide local mail name in outgoing mail? yes
+  Visible domain name for local users: sonic.net
+
+this creates file /etc/exim/update-exim4.conf.conf:
+dc_eximconfig_configtype='smarthost'
+dc_other_hostnames='anna.ashnet'
+dc_local_interfaces='127.0.0.1'
+dc_readhost='sonic.net'
+dc_relay_domains=''
+dc_minimaldns='false'
+dc_relay_nets=''
+dc_smarthost='mail.sonic.net'
+CFILEMODE='644'
+dc_use_split_config='true'
+dc_hide_mailname='true'
+dc_mailname_in_oh='true'
+dc_localdelivery='mail_spool'
+
+
+For rewriting sender's email name add line in file /etc/email-addresses:
+agould: ashleyg@sonic.net
+  
+
+# ldap 
+ldapsearch -LLL -x -Duid=cyrus,dc=intelligentspace,dc=com -W -b o=DNS,dc=intelligentspace,dc=com
+ldapsearch -x objectclass=dNSZone
+ldapsearch -x "(objectClass=posixGroup)"
+ldapsearch -x objectclass=shadowAccount|grep uid=
+ldapsearch -x fn=Root-Meldungen mailDeliveryProgram
+slapindex -v
+
+ldapsearch -b dc=ad,dc=ucop,dc=edu -x -h p-irc-dc02.ad.ucop.edu -D 'CN=John Shen\, Sr.,OU=Unix Magistrates,OU=Magistrates,DC=AD,DC=UCOP,DC=EDU' -W "(cn=jshen)" uid loginShell gidNumber unixHomeDirectory uidNumber name > jshen.ldif.txt
+
+ldapsearch -LLL  -b ou=unix,dc=ad,dc=ucop,dc=edu -x -h p-irc-dc02.ad.ucop.edu -D 'CN=Ashley Gould\, Sr.,OU=Unix Magistrates,OU=Magistrates,DC=AD,DC=UCOP,DC=EDU' -W "(cn=dwcsdb2dev)"
+
+ldapsearch -LLL  -b ou=unix,dc=ad,dc=ucop,dc=edu -x -h p-irc-dc02.ad.ucop.edu -D 'CN=Ashley Gould\, Sr.,OU=Unix Magistrates,OU=Magistrates,DC=AD,DC=UCOP,DC=EDU' -W "(cn=jjew)" uidNumber
+
+# using aliases (ldapa ldapm ldaps)
+ldaps \(cn=zg_dwd1_users\) dn
+ldapa filename.ldif
+ldapm filename.ldif
+
+
+
+# samba
+smbclient -L hostname -U winuser  	# shows shares
+nmblookup -A <ip> 	# shows netbiosnames
+smbclient  //hostname/share -U winuser	# interactive mount
+
+useradd -s /sbin/nologin winuser	# samba only user account
+smbpasswd -a winuser			# activate samba user, set passwd
+
+# samba ports to open:
+ucp 137,128
+tcp 139,445
+
+
+
+# cyrus-imap
+cyradm --auth plain --user cyrus localhost
+ctl_mboxlist -d
+
+
+
+# ssl
+# making CA and self-signed server certificate
+# create CA key and cert
+openssl genrsa -des3 -out ca.key 1024
+openssl req -new -x509 -days 365 -key ca.key -out ca.crt
+
+# create server key and certificate request
+openssl genrsa -des3 -out server.key 1024
+openssl req -new -key server.key -out server.csr
+
+# veiw details
+openssl rsa -noout -text -in ca.key
+openssl x509 -noout -text -in ca.crt
+openssl req -noout -text -in server.csr
+openssl rsa -noout -text -in server.key
+
+# tool for signing certs
+scp agould@isis:~/notes/apache/openssl/sign.sh .
+chmod +x sign.sh 
+./sign.sh server.csr
+
+# strip passphrase from server key
+openssl rsa -in server.key -out server.key
+
+# This is the Cool Way:
+# create self-signed key without using a CA
+openssl genrsa -des3 -out ucalstaging.key 1024
+openssl rsa -in ucalstaging.key -out ucalstaging.key
+openssl req -new -x509 -key ucalstaging.key -out ucalstaging.crt -days 9999
+
+openssl genrsa -des3 -out beta.ucop.edu.key 1024
+openssl rsa -in beta.ucop.edu.key -out beta.ucop.edu.key
+openssl req -new -x509 -key beta.ucop.edu.key -out beta.ucop.edu.crt -days 9999
+
+
+# install key and cert
+cp server.crt /usr/local/apache2/conf/ssl.crt/
+cp server.key /usr/local/apache2/conf/ssl.key/
+
+# verifying certificate and private key
+openssl rsa -noout -text -in shibtest.key -modulus
+openssl req -noout -text -in shibtest.csr -modulus
+openssl x509 -noout -text -in shibtest.crt -modulus
+
+# convert to pkcs12 format
+openssl pkcs12 -export -in docdirect.crt -inkey docdirect.key -out docdirect.pkcs12
+
+# another way to make self-signed cert
+openssl genrsa -out sseweb3-dr.key
+openssl req -new -key sseweb3-dr.key -out sseweb3-dr.csr
+openssl x509 -req -days 3650 -in atyourserviceonline-dr.csr -signkey atyourserviceonline-dr.key -out atyourserviceonline-dr.crt
+
+openssl genrsa -out unx-ldap-poc-t01.key
+openssl req -new -key unx-ldap-poc-t01.key -out unx-ldap-poc-t01.csr
+openssl x509 -req -days 3650 -in unx-ldap-poc-t01.csr -signkey unx-ldap-poc-t01.key -out unx-ldap-poc-t01.crt
+
+# ssl on puppet
+openssl s_client -connect puppet:8140 -CAfile certs/ca.pem -cert certs/db9.domain.com.pem -key private_keys/db9.domain.com.pem -showcerts -state -verify 2
+
+# didnt work
+openssl s_client -connect unxpupd01:8140 -CAfile certs/ca.pem -cert certs/rhel64-template.ucop.edu.pem -key private_keys/rhel64-template.ucop.edu.pem -showcerts -state -verify 2
+
+
+# genrate key and crs from script
+cd /etc/ssl/private
+openssl genrsa -des3 -out $(hostname -f).key 2048 # provide passphrase
+openssl rsa -in $(hostname -f).key -out $(hostname -f).key # provide passphrase
+openssl req -new -key $(hostname -f).key -out $(hostname -f).csr << EOF
+US
+California
+Oakland
+University of California
+Office of the President
+$(hostname)
+.
+cucumber
+UCOP
+EOF
+openssl req -noout -text -in $(hostname -f).csr
+
+
+# genrate key and self-signed cert from script
+#
+# suse:
+#ssldir=/etc/ssl/private
+#
+# rhel:
+ssldir=/etc/pki/tls
+
+cd $ssldir
+openssl genrsa -out private/$(hostname -f).key
+#openssl rsa -in private/$(hostname -f).key -out private/$(hostname -f).key
+openssl req -new -x509 -key private/$(hostname -f).key -out certs/$(hostname -f).crt -days 9999 << EOF
+US
+California
+Oakland
+University of California
+Office of the President
+$(hostname)
+.
+cucumber
+UCOP
+EOF
+
+
+
+
+
+# the rhel way
+yum install crypto-utils mod_ssl
+genkey --days 365 server3.example.com
+
+
+
+
+# ftp
+ftp (login)
+lcd local_dir (change dir on local host)
+get file (goes to local_dir)
+mget
+ncftp
+
+
+# telnet
+telnet 209.233.191.3 # oakland public library catalogue
+
+
+# wget
+wget -S --passive-ftp ftp://ftp.suse.com/pub.....
+wget -Sc --passive-ftp ftp://ftp.suse.com/pub
+wget -E -H -k -K -nh -p http://I<site>/I<document>
+wget -E -nH --cut-dirs=1 -k -p -nh -r -l4 http://www.ca.postgresql.org/docs/aw_pgsql_book/node3.html 
+wget --http-user=LoginName --http-password=PassWord -r /
+http://sdb.suse.de/download/i368/update/Openexchange-Server/4/rpm/
+wget http://<username>:<passwd>@url
+
+wget http://agould:shrubler@sdb.suse.de/download/i386/update/SUSE-SLES/9/images/SLES-9-i386-RC5-CD2.iso
+# download got interupted. I continue where it left off with:
+wget -c http://agould:shrubler@sdb.suse.de/download/i386/update/SUSE-SLES/9/images/SLES-9-i386-RC5-CD2.iso
+
+wget http://agould:shrubler@sdb.suse.de/download/i386/update/SUSE-CORE/9/images/SLES-9-SP-2-i386-GM-CD1.iso
+
+# get the url from downloads page - right click on download button, and 
+select "copy link location'. then middle click onto a command line.
+wget --http-user=ashely --http-password=amiad155 'http://download.novell.com/sendredirect?target=%2Fprot%2FfQKpDcAhPVY%7E%2FSLE-11-SDK-DVD-x86_64-GM-Media2.iso&buildid=fQKpDcAhPVY&fileid=6dtObpoIUzM~&mirror=AkamaiHost&nohost=false'
+
+# curl
+curl -G http://puppetdb:8080/v3/resources/Class/Jboss::Java_install 2>/dev/null | grep certname
+curl -G http://puppetdb:8080/v3/resources/Class/Mysql::Service 2>/dev/null | grep certname
+curl -G http://puppetdb:8080/v3/facts/platform/dev | grep certname
+
+
+# cups
+
+lppasswd -a root	# set md5 passwd for root, lives in /etc/cups/passwd.md5
+
+
+
+# apache
+ htpasswd /usr/local/etc/httpd/htpasswd bfarmer
+apachectl fullstatus | w3m
+        restart =       SIGHUP
+        graceful =      SIGUSR1
+        configtest =    httpd -t
+httpd2 -S -DSSL		# show what is running including <IfDefine SSL>
+httpd -t -DSSL		# config test with SSL defined
+
+
+
+
+# systemimager
+
+# client
+si_prepareclient -server 128.48.97.221 -yes
+
+# server
+si_lsimage
+si_rmimage SLES9-i386-xServer342
+si_mvimage SLES9-x86-64-x4200 SLES9-x86-64-x4200.20060525
+si_getimage -ip-assignment static -post-install reboot -exclude=/images/* -image SLES9-x86-64-x4200 -golden-client hvxen-0c
+si_getimage -ip-assignment static -post-install shutdown -exclude=/proc/* -exclude=/sys/* -golden-client gemini -image SLES9-i386-xServer342
+si_cpimage -verbose -directory /images0/systemimager/ -server 128.48.97.221 SLES9-x86-64-x4200 SLES9-x86-64-x4200
+rcsystemimager-server-rsyncd reload
+
+
+
+
+# cfengine
+cfagent -f /var/cfengine/inputs/cfagent.conf -v -n 
+cfagent -f /var/cfengine/inputs/cfagent.conf -v
+cfagent -p -v	# parse-only-verbose mode
+cfagent -p -v | grep "Defined Classes"
+
+
+# puppet
+ralsh user agould		# show user resource on local system
+ralsh -e user agould		# opens a file with above output
+ralsh user agould ensure=present	# create user
+puppet --verbose --noop file.pp	# run against file.pp manifest in no opp mode
+puppet doc --reference configuration|less	# docs for puppet.conf params
+
+
+
+
+
+
+## X
+
+X -version
+xset q
+xset dpms 1800 2400 3600
+xset s off
+xcolors
+xfontsel
+roottail
+xdpyinfo
+xmodmap
+xev
+xrdb ~/.Xdefaults
+xauth list
+xauth extract - $DISPLAY
+xauth extract - isis/unix:0
+
+# consol
+showkey -s
+screen; screen -x
+screen /dev/ttyS0
+    Ctrl-a H 		# screen gets written to log file
+    Ctrl-a c		# quit screen
+
+# apps
+xtermset
+lacheck
+
+# fun
+oneko
+dog
+tuxeyes
+oclock -geometry 700x700 -transparent -fg red -bd black -bw 10 &
+
+
+
+
+# Misc
+
+
+
+## Multimedia
+
+# cda
+/usr/X11R6/lib/X11/xmcd/config/config.sh	# configuration script
+cda on					# defaults to first device configured
+cda play
+cda play 3				# plays track three
+cda track next				# skip to next track
+cda track prev
+cda status
+cda toc					# get table of contents from cddb
+cda notes				# get notes on track playing
+cda stop 
+cda off
+cda -dev /dev/scd1 on			# for a different device
+cda -dev /dev/scd1 play
+
+
+# cdrecord
+cdrecord -scanbus		get scsi device info
+cdrecord -inq dev=1,0,0	        who made the cdrom
+cdrecord -atip dev=1,0,0	tells about the cd media
+cdrecord -prcap dev=1,0,0	gives capabilities of the device
+
+cdrecord -v -dummy -speed=10  dev=1,0,0 image.iso	dry run
+cdrecord -v -speed=10 -eject dev=1,0,0 image.iso	burn an image
+
+
+# cdrdao
+date; cdrdao copy --source-device 0,0,0 --device 0,1,0 --driver generic-mmc --source-driver generic-mmc;date;eject /dev/scd1
+
+cdrdao copy --source-device 0,0,0 --source-driver generic-mmc --device 1,0,0 --driver generic-mmc
+
+cdrdao copy --source-device 0,0,0 --source-driver generic-mmc --device 0,1,0
+
+date;cdrdao read-cd --device 0,0,0 --driver generic-mmc --with-cddb --datafile jill_scott__who_is_jill_scott.bin --fast-toc jill_scott__who_is_jill_scott.toc;date
+
+date;cdrdao write --device 0,1,0 --eject --driver generic-mmc jill_scott__who_is_jill_scott.toc;date
+
+
+cdrdao read-cd --device 0,0,0 --driver generic-mmc --with-cddb --datafile artist__album.bin --fast-toc artist__album.toc
+
+cdrdao write --device 0,1,0 --eject  artist__albmu.toc
+
+
+# vorbis tools
+ogginfo 
+vorbiscomment -l song.ogg song.ogg.tag
+vi song.ogg.tag
+vorbiscomment -c song.ogg.tag -w song.ogg
+
+
+
+
+
+# stress.sh on gemini
+for dir in home usr var opt srv usr/local var tmp; do echo /$dir;stress.sh -b3 -j4 -s2 -d  /$dir  done
+for dir in home usr var opt srv usr/local var tmp; do echo $dir;rm -rf
+/$dir/stress; done
+
+scp agould@isis:~/development/bash/stress/stress.sh bin
+gemini:~/bin # for dir in  /usr  /opt /usr/local /var /srv; do stress.sh.yaga -b5 -j2 -s2 -t 72 -d  $dir; done
+
+
+
+
+
+
+
+## Proprietary tools
+
+# tsm
+dsmc	# puts you into a cli
+tsm> restore /var/log/httpd/ /web/log_archive.web1/httpd/ -inactive -subdir=yes -replace=no
+tsm> q backup /web/www-data/cvs/CVSROOT
+
+tsm> q backup -inactive -fromdate=11/01/2009 /logs/apache/access_log-*.bz2 -todate=12/01/2009
+tsm> restore -inactive -fromdate=11/01/2009 -todate=12/01/2009 /logs/apache/access_log-*.bz2 -replace=no
+tsm> restore -inactive -fromdate=10/01/2012 -todate=10/05/2012 /apps/dpr/.ssh/authorized_keys
+
+q backup /apps/mysql/ib*
+restore /apps/mysql/ib* /apps/mysql-tsm_restore.20100920/
+
+
+dsmc selective /ftphome/ftpusr1/ -subdir=yes	# make a backup of given dir
+dsmc restore /ftphome/ftpusr1/ -subdir=yes      # restore it
+dsmc restore /ftphome/ftpusr1/ /tmp/ftpuser1/ -subdir=yes   # to a new location
+dsmc restore  /home/jwilcox/share/ -inactive -subdir=yes -replace=no
+						# old files also
+dsmc restore {/}home/agould/ucop/notes/san/ibm/notes.ds8100
+					# force restore to use / as filespace
+
+dsmc incremental 				# initiate a backup
+/opt/tivoli/tsm/client/ba/bin/dsmc sched	# seed the schedualer
+
+
+# tsm admin commands
+dsmadmc
+tsm: ADSM>q proc
+tsm: ADSM>q ses
+tsm: ADSM>cancel sess 8698
+tsm: ADSM>help cancel sess
+tsm: ADSM>q node gemini
+tsm: ADSM>q node gemini f=d
+tsm: ADSM>rename node adena-v adena-vhost
+tsm: ADSM>rename admin adena-v adena-vhost	# you have to do both
+tsm: KOOTENAY>q event * *			# query events, did they finish
+						  thier backup?
+tsm: KOOTENAY>set password			# change password for node
+ebab-vhost-dr
+> Adena-vhost-dr
+
+misc. commands from ryan miller's talk:
+tsm: ADSM>q filespace
+tsm: ADSM>q filespace mbira
+tsm: ADSM>del filespace mbira
+tsm: ADSM>del node mbira
+tsm: ADSM>q node f=d > /tmp/nodeinfo.txt
+tsm: KOOTENAY>q node gimbri-vhost f=d
+
+Run one command and bail out (batchmode)
+dsmadmc -id=admin -pa=g0b1krop q node web5 f=d
+dsmadmc -comma -id=admin -pa=g0b1krop q node f=d > /tmp/nodes.csv
+
+
+Register a new node - the short verions:
+
+# old version
+dsmadmc -id=admin -pa=g0b1krop 
+register node smtprod10 x2forus9 domain=server contact='unix group'
+define collocmember unix-3 smtprod10
+define assoc server night-a smtprod10
+
+# new version (unxtsmp01)
+DOMAIN=BEST_EFFORT	# choices: HI_CRIT CRIT IMPORTANT BEST_EFFORT
+NODE=dondo-vhost
+dsmadmc -id=admin -pa=g0b1krop "Register Node $NODE  x2forus9 dom=$DOMAIN  Contact='Unix Group'"
+dsmadmc -id=admin -pa=g0b1krop "def assoc $DOMAIN Daily_Incremental  $NODE"
+
+
+
+
+register node P-IRC-FS06 P1kkuld. domain=server contact='Windows Engineering'
+define collocmember WINDOWS-1 P-IRC-FS06
+define assoc server night-a P-IRC-FS06
+
+
+
+set hi level and lo level addresses
+tsm: KOOTENAY>update node kayamba hla=128.48.111.106 lla=1508
+dsmadmc -id=admin -pa=g0b1krop update node kutiro-vhost hla=128.48.96.143 lla=1508
+
+
+Register a desktop:
+register node horus amiad155 domain=unix_wks contact='UCOP Data Center' maxnummp=2 url=''
+def assoc unix_wks late-afternoon horus
+
+
+# reset passwd
+update node bass-vhost x2forus9
+
+rename a node:
+tsm: KOOTENAY>rename node mbira mbira-vhost
+dsmadmc -id=admin -pa=g0b1krop rename node aigappd15 aigappt15
+dsmadmc -id=admin -pa=g0b1krop rename admin aigappd15 aigappt15
+
+remove a node from nightly backup schedule:
+q association
+delete association SERVER NIGHT-A GABRIEL3
+
+Remove a node:
+tsm: KOOTENAY>q proc			# dont run if doing database backup
+tsm: KOOTENAY>delete filespace lawton *
+tsm: KOOTENAY>remove node lawton        
+dsmadmc -id=admin -pa=g0b1krop q proc
+dsmadmc -id=admin -pa=g0b1krop delete filespace idp3 \*
+dsmadmc -id=admin -pa=g0b1krop remove node idp3
+
+
+
+list="
+conga-vhost   
+dbp5-vhost
+ney-vhost     
+ahoco-vhost   
+brekete-vhost 
+kutiro-vhost  
+rakatak-vhost 
+sabar-vhost   
+"
+
+# create nodes:
+DOMAIN=BEST_EFFORT	# choices: HI_CRIT CRIT IMPORTANT BEST_EFFORT
+for host in $list; do
+  dsmadmc -id=admin -pa=g0b1krop "Register Node $host  x2forus9 dom=$DOMAIN  Contact='Unix Group'"
+  dsmadmc -id=admin -pa=g0b1krop "def assoc $DOMAIN Daily_Incremental  $host"
+done
+
+# delete nodes:
+for host in $list; do
+  #dsmadmc -id=admin -pa=g0b1krop query node $host
+  #dsmadmc -id=admin -pa=g0b1krop delete filespace $host \*
+  dsmadmc -id=admin -pa=g0b1krop remove node $host
+done
+
+
+
+
+
+
+
+# sun ilom
+show /SP/users
+delete /SP/users/pwubben
+create /SP/users/agould role=administrator
+set /SP/users/root password
+show /SP/users mthompso
+
+reset /SP
+show /SYS
+start /SYS
+
+# checking system bios version
+show /SYS/MB/BIOS
+
+# resetting network configs
+# set "pending" properties first, then set commitpending=true
+set /SP/network pendingipaddress=128.48.100.45 pendingipgateway=128.48.100.1 pendingipnetmask=255.255.255.0
+set /SP/network pendingipdiscovery=static
+set /SP/network commitpending=true
+show /SP/network
+
+start /SP/console
+show /SP/logs/event/list	# page through event log
+set /SP/logs/event/ clear=true	# clear event log
+
+
+show /SP/network
+set /SP/network pendingipgateway=192.35.228.129 pendingipnetmask=255.255.255.128
+set /SP/network commitpending=true
+reset /SP
+
+
+DONE bluxome-dr      ucsd cabinet-02, row 11-12
+DONE freelon-dr      ucsd cabinet-02, row 3-4
+DONE natoma-dr       ucsd cabinet-02, row 9-10
+DONE noriega-dr      ucsd cabinet-02, row 7-8
+DONE sacco-dr        ucsd cabinet-05, row 3-4
+DONE vanzetti-dr     ucsd cabinet-05, row 5-6
+DONE web1-dr         ucsd cabinet-02, row 13-14
+DONE web2-dr         ucsd cabinet-02, row 5-6
+
+
+
+
+# ds8100 cli
+dscli
+dscli> dscli> lssi -l
+dscli> showsi IBM.2107-75DMLD1
+dscli> lsddm IBM.2107-75DMLD1
+dscli> lsarraysite
+dscli> lsarray
+dscli> lsrank
+
+dscli> lsioport
+dscli> lsioport -l
+
+dscli> lshostconnect
+dscli> lshostconnect -volgrp V12
+dscli> mkhostconnect -hosttype LinuxRHEL -wwname 10000000c952322a  -portgrp 0 -volgrp V13 -ioport all sacco-0
+ mkhostconnect -hosttype LinuxRHEL -wwname 10000000c950cd7a -portgrp 406 -ioport all -volgrp v32 oakwood
+dscli> chhostconnect -name vanzetti-0 0026
+dscli> chhostconnect -ioport I0032,I0102 0028
+dscli> chhostconnect -volgrp none 47
+dscli> rmhostconnect 0025
+
+
+dscli> lsvolgrp
+dscli> showvolgrp -lunmap v12
+dscli> chvolgrp -action remove -volume 7000 v12
+dscli> chvolgrp -action add -volume 7100 v12
+dscli> mkvolgrp -type scsimap256 xenvi_lab
+dscli> rmvolgrp v13
+
+dscli> lsextpool
+dscli> lsextpool -stgtype fb
+dscli> lsextpool p0002 p0003
+
+dscli> lsfbvol
+dscli> lsfbvol -volgrp v12
+dscli> lsfbvol 7000
+dscli> showfbvol -metrics -volgrp v12
+dscli> showfbvol -rank 7000
+dscli> showfbvol -rank 7100
+dscli> showfbvol -rank 0019
+dscli> mkfbvol -extpool p16 -cap 1582 -name vmware0003 -volgrp v12 7001
+dscli> mkfbvol -extpool p2 -cap 332 -name xenvi_lab0000 -volgrp v13 001A
+dscli> mkfbvol -extpool p23 -cap 300 -name hvxen0002 -volgrp v14 0131
+dscli> chfbvol -name vmware0004 7001
+dscli> rmfbvol 7000
+
+mkfbvol -extpool p28 -cap 400 -name unix_vmdb2_15 -volgrp v38 0027
+mkfbvol -extpool p33 -cap 400 -name unix_vmdb2_16 -volgrp v38 0138
+mkfbvol -extpool p30 -cap 400 -name unix_vmdb2_17 -volgrp v38 0028
+mkfbvol -extpool p31 -cap 400 -name unix_vmdb2_18 -volgrp v38 0120
+mkfbvol -extpool p32 -cap 130 -name unix_vmdb2_19 -volgrp v38 0011
+mkfbvol -extpool p33 -cap 130 -name unix_vmdb2_20 -volgrp v38 0113
+mkfbvol -extpool p39 -cap 600 -name unix_vmdb2_21 -volgrp v38 011a
+mkfbvol -extpool p40 -cap 260 -name unix_vmdb2_22 -volgrp v38 0020
+mkfbvol -extpool p40 -cap 260 -name unix_vmdb2_23 -volgrp v38 001e
+mkfbvol -extpool p40 -cap 270 -name unix_vmdb2_25 -volgrp v38 001f
+
+mkfbvol -extpool p28 -cap 540 -name unix_vmdb2_26 -volgrp v38 0021
+
+mkfbvol -extpool p30 -cap 300 -name unix_vmdb2_25 -volgrp v38 001b
+mkfbvol -extpool p31 -cap 300 -name unix_vmdb2_26 -volgrp v38 0113
+
+mkfbvol -extpool p36 -cap 340 -name UNIX_hrb-prd-5 -volgrp v28 002a
+mkfbvol -extpool p35 -cap 100 -name UNIX_ers-hadr-4 -volgrp v32 0135
+mkfbvol -extpool p37 -cap 240 -name UNIX_ersdb-prd4 -volgrp v37 012d
+mkfbvol -extpool p34 -cap 240 -name UNIX_ers-qa-2 -volgrp v29 002c
+mkfbvol -extpool p37 -cap 240 -name UNIX_ers-dev-2 -volgrp v31 0119
+
+mkfbvol -extpool p4 -cap 503 -name UNIX_vmprd0-10k3 -volgrp v22 0015
+mkfbvol -extpool p6 -cap 508 -name UNIX_vmprd0-10k4 -volgrp v22 0016
+mkfbvol -extpool p33 -cap 650 -name unix_vmprd0-15k2 -volgrp v22 0109
+mkfbvol -extpool p27 -cap 530 -name unix_vmprd0-10k8 -volgrp v22 010a
+
+
+mkfbvol -extpool p30 -cap 87 -name unix_vmdb2_test -volgrp v38 0031
+
+mkvolgrp -type scsimap256 vm_int01
+mkhostconnect -hosttype LinuxRHEL -wwname 10000000c9985a38 -portgrp 37 -ioport all -volgrp v37 esxint01
+mkhostconnect -hosttype LinuxRHEL -wwname 10000000c99858c2 -portgrp 37 -ioport all -volgrp v37 esxint01
+mkhostconnect -hosttype LinuxRHEL -wwname 10000000C9985A6E -portgrp 37 -ioport all -volgrp v37 esxint02
+mkhostconnect -hosttype LinuxRHEL -wwname 10000000C9985A01 -portgrp 37 -ioport all -volgrp v37 esxint02
+mkhostconnect -hosttype LinuxRHEL -wwname 10000000C99858C5 -portgrp 37 -ioport all -volgrp v37 esxint03
+mkhostconnect -hosttype LinuxRHEL -wwname 10000000C9985A6F -portgrp 37 -ioport all -volgrp v37 esxint03
+
+mkfbvol -extpool p0 -cap 500 -name int01-00-fata -volgrp v4 0000
+mkfbvol -extpool p0 -cap 500 -name int01-01-fata -volgrp v4 0001
+mkfbvol -extpool p8 -cap 791 -name int01-02-15kr5 -volgrp v4 0002
+mkfbvol -extpool p8 -cap 791 -name int01-03-15kr5 -volgrp v4 0003
+mkfbvol -extpool p9 -cap 791 -name int01-04-15kr5 -volgrp v4 0100
+mkfbvol -extpool p9 -cap 791 -name int01-05-15kr5 -volgrp v4 0101
+
+
+mkvolgrp -type scsimap256 vm_migrate_qa
+mkvolgrp -type scsimap256 vm_migrate_prd
+
+mkhostconnect -hosttype LinuxRHEL -wwname 10000000c9523382 -portgrp 5 -ioport all -volgrp v5 jaguar
+mkhostconnect -hosttype LinuxRHEL -wwname 10000000c9523381 -portgrp 5 -ioport all -volgrp v5 jaguar
+mkhostconnect -hosttype LinuxRHEL -wwname 10000000c94cdcf4 -portgrp 5 -ioport all -volgrp v5 tiger
+mkhostconnect -hosttype LinuxRHEL -wwname 10000000c94cdcf5 -portgrp 5 -ioport all -volgrp v5 tiger
+
+chhostconnect -volgrp v6 0018
+chhostconnect -volgrp v6 0019
+chhostconnect -volgrp v6 001A
+chhostconnect -volgrp v6 001B
+chhostconnect -volgrp v6 001C
+chhostconnect -volgrp v6 001D
+
+mkfbvol -extpool p8 -cap 792 -name int01-06-15kr5 -volgrp v5 0004
+mkfbvol -extpool p9 -cap 792 -name int01-07-15kr5 -volgrp v6 0102
+
+chvolgrp -action add -volume 0004,0102 v4
+
+
+
+
+
+dscli> offloadauditlog -logaddr smc1 /tmp/auditlog.0
+
+dscli -user agould -passwd pass\!wrd lsfbvol -l > extpool_mapping/lsfbvol-l
+dscli -user agould -passwd pass\!wrd -script mkhosts_vmw01.txt
+
+
+
+
+
+
+
+
+# sdd
+cfgvpath query
+lsvpcfg
+
+datapath query 
+datapath query device 0 4		# devices 0 thru 4
+datapath set device 0 2 policy lb	# set multipath policy to load-balancing
+					# for vpaths 0 thru 2
+datapath query devstats
+datapath query essmap
+datapath query adaptstats
+
+
+
+
+## vmware esx server service console
+
+# esxtop
+esxtop -abd 2 -n 450 > output.csv 
+
+# show HBAs:
+esxcfg-mpath -a
+esxcfg-mpath -l
+esxcfg-rescan vmhba1		scan for new luns
+esxcfg-rescan vmhba2		scan for new luns on second path also
+
+# how do I find the ds8100 volume id from vmware?
+esxcfg-mpath -lv | grep Disk
+esxcfg-vmhbadevs -am
+ls -l /vmfs/volumes/
+
+
+## Managing vSwitches
+# query network addresses in use
+esxcfg-vswif -l
+esxcfg-vmknic -l
+# create a vSwitch with name INT01-x02-mgmt
+esxcfg-vswitch -a INT01-x02-mgmt
+# add an uplink to a vSwitch
+esxcfg-vswitch -L vmnic3 INT01-x02-mgmt
+# add portgroup named VMkernel to new vSwitch
+esxcfg-vswitch -A VMkernel INT01-x02-mgmt 
+# create a vmkernel ip for the new portgroup
+esxcfg-vmknic --add --ip=128.48.117.97 --netmask=255.255.255.0 VMkernel
+# delete service console vswif1
+esxcfg-vswif -d vswif1
+# delete portgroup "service console" on vSwitch INT01-x02-mgmt
+esxcfg-vswitch -D "Service Console" INT01-x02-mgmt
+# delete vmkernel interface named VMkernel
+esxcfg-vmknic -d VMkernel
+# delete portgroup "VMkernel" on vSwitch INT01-x02-mgmt
+esxcfg-vswitch -D "VMkernel" INT01-x02-mgmt
+# remove an uplink from INT01-x02-mgmt
+esxcfg-vswitch -U vmnic3 INT01-x02-mgmt
+
+
+## Managing dvSwitches
+# delete an uplink from a DVPort of a DVSwitch
+esxcfg-vswitch -Q vmnic3 -V 1 INT01-x02-mgmt  
+# add an uplink to the second DVPort ID of DVSwitch INT01-x02-mgmt
+esxcfg-vswitch -P vmnic3 --dvp 2 INT01-x02-mgmt
+
+
+
+
+# reset the MTU on a vSwitch
+esxcfg-vmknic -a -i 128.48.97.73 -n 255.255.255.0 -m 1500 "VMotion 0"
+esxcfg-vswitch -m 8000 vSwitch1
+
+# set duplex and speed on vnic
+esxcfg-nics -d full -s 1000 vmnic3
+
+# enable cdp
+esxcfg-vswitch -B both vSwitch0		# both listen and advertize
+esxcfg-vswitch -b vSwitch0
+vmware-vim-cmd hostsvc/net/query_networkhint
+
+# firewall settings
+vmkping 128.48.117.74
+esxcfg-firewall -q
+esxcfg-firewall -s
+esxcfg-firewall -e sshClient
+esxcfg-firewall --openport 80,tcp,out,http
+
+# nas setup
+esxcfg-nas -l
+esxcfg-nas -d /iso				# remove a nas vol
+/usr/sbin/esxcfg-nas -a iso -o penny -s /iso
+
+
+# manipulating vdisks
+vmkfstools -E televi-vhost.vmdk televi-vhost-old.vmdk # rename vdisk
+vmkfstools -U televi-vhost_2.vmdk		# rm virtual disk and files
+
+						# clone a vdisk
+vmkfstools -i DS15K03-0028/swisdi-vhost/swisdi-vhost.vmdk DB2_container01-0017/swisdi-vhost/swisdi-vhost.vmdk
+
+
+# vma
+vifp listservers
+vifp addserver esxi-ucs-01-vk
+vifp removeserver rohan.ucop.edu --force
+vifs  -c "[datastore] vmname/vmname.vmx" "[datastore]  newname/newname.vmx"
+
+
+
+
+## vmware-cmd
+# start a vm
+vmware-cmd  swisdi-vhost start
+
+# what VMs are registered 
+vmware-cmd -l
+
+# query what VMs are running on this esxserver
+for vm in $(vmware-cmd -l); do echo -n $(basename $vm);vmware-cmd $vm getstate; done
+
+# check if vmwaretools is running
+vmware-cmd /vmfs/volumes/4918e467-57b1e803-179d-00144f8d08f0/sl10min-template/sl10min-template.vmx gettoolslastactive
+
+# do a graceful shutdown
+vmware-cmd /vmfs/volumes/4918e467-57b1e803-179d-00144f8d08f0/yumlab01-vhost/yumlab01-vhost.vmx stop shutdown
+
+# make a snapshot
+vmware-cmd /vmfs/volumes/DS8100:UnixProd00/djembe-vhost/djembe-vhost.vmx createsnapshot clonesnap "snapshot for cloning" 1 0
+
+# remove a snapshot
+vmware-cmd /vmfs/volumes/DS8100:UnixProd00/djembe-vhost/djembe-vhost.vmx removesnapshots
+
+# Is VM running?
+for VM in $(vmware-cmd -l); do
+    if [ $(vmware-cmd $VM getstate | awk '{print $3}') = "on" ]; then
+        echo "$(basename $VM) is  running"
+    fi
+done
+
+# Is VM off?
+for VM in $(vmware-cmd -l); do
+    if [ $(vmware-cmd $VM getstate | awk '{print $3}') = "off" ]; then
+        echo "$(basename $VM) is NOT running"
+    fi
+done
+
+# start all VMs
+for VM in $(vmware-cmd -l); do
+    if [ $(vmware-cmd $VM getstate | awk '{print $3}') = "off" ]; then
+      echo "Starting $(basename $VM)"
+      vmware-cmd $VM start
+    fi
+done
+
+
+# Is vmwaretools running?
+for VM in $(vmware-cmd -l); do
+  if [ $(vmware-cmd $VM getstate | awk '{print $3}') = "on" ]; then
+    if [ $(vmware-cmd $VM gettoolslastactive | awk '{print $3}') != "1" ]; then
+      echo "$(basename $VM): vmwaretools is not running"
+    fi
+  fi
+done
+
+
+# Graceful shutdown of all running VMs - INACTIVE
+for VM in $(vmware-cmd -l); do
+  if [ $(vmware-cmd $VM getstate | awk '{print $3}') = "on" ]; then
+    if [ $(vmware-cmd $VM gettoolslastactive | awk '{print $3}') != "1" ]; then
+      echo "WARNING: $(basename $VM): vmwaretools is not running"
+    else
+      echo "Doing Graceful shutdown of $(basename $VM)"
+      vmware-cmd $VM stop shutdown
+    fi
+  fi
+done
+
+
+
+## vmware-vim-cmd
+# query basic info on registered VMs
+vmware-vim-cmd vmsvc/getallvms
+
+# get list of running tasks
+vmware-vim-cmd vimsvc/task_list
+
+# what running tasts apply to a particular VM
+vmware-vim-cmd vmsvc/get.tasklist <VMID>
+
+# info on a particuar task
+vmware-vim-cmd vimsvc/task_info <task identifier>
+
+
+## vm-support
+# list of running VMs (worlds)
+vm-support -x
+
+
+## /proc/vmware
+cat /proc/vmware/vm/*/names
+
+# esx3.5
+less -S /proc/vmware/vm/####/cpu/status
+
+
+# list VMs
+/usr/lib/vmware/bin/vmdumper -l
+cat /etc/vmware/hostd/vmInventory.xml
+
+
+
+
+
+# updates
+esxupdate query
+esxupdate -d http://penny/esx_updates/upgrade-from-esx3.5-3.5.0_update04-153875/ scan
+esxupdate -d http://penny/esx_updates/upgrade-from-esx3.5-3.5.0_update04-153875/ scan
+esxupdate --bundle upgrade-from-ESX4.0-to-4.1.0-0.0.260247-release.zip update
+
+
+less /var/log/vmware/esxupdate.log
+
+
+# refreash services on esx host
+service vmware-vpxa restart
+service vmware-vmkauthd restart
+
+
+
+
+
+
+
+# centrify ad commands:
+adinfo --diag ad.ucop.edu
+adpasswd -a agould -p xxxxxxxx -n g01Ftub3 er1wwebdb2qa
+adjoin ad.ucop.edu -u ashleyg -c "ou=hosts,ou=unix" -z unixgroup_linux
+adjoin ad.ucop.edu -u ashleyg -c "ou=hosts,ou=unix" -z unixgroup_linux -V
+adjoin ad.ucop.edu -u ashleyg -s p-irc-dc01.ad.ucop.edu -c "ou=hosts,ou=unix" -z sse_app_prd_2 -V
+adjoin ad.ucop.edu -u ashleyg -s p-irc-dc01.ad.ucop.edu -c "ou=hosts,ou=unix" -z uasprod -f
+
+/usr/share/centrifydc/bin/adfixid
+/usr/share/centrifydc/bin/adfixid -C	# commit-all, edits passwd group files
+
+
+
+
+
+## vcs cluster
+hagrp -state
+haconf -makerw
+hauser -add mholm
+hauser -addpriv mholm Administrator
+haconf -dump
+
+
+
+
+## db2
+db2 list db directory		# list databases
+db2 list db directory 2>&1 >/dev/null || echo "db2 is down"
+db2ls
+db2ls -q -b /apps/IBM/db2/V9.7	# list products
+db2inst1@dbp5-vhost:~> db2look -d applyuc -l -o db2look.ddl
+
+# set db2 port:
+# where /etc/services contains "DB2_db2inst1 60000/tcp"
+db2 update dbm cfg using svcename DB2_db2inst1
+
+# check db2 configs:
+db2 get dbm cfg
+db2 get dbm cfg|grep -i svc
+
+
+testing a database:
+
+# start db2 cli:
+sudo su - db2inst1
+db2
+
+db2 => list db directory                        # list databases
+db2 => connect to pwaxml                        # connect to one of them
+db2 => select count(*) from syscat.tables       # show how many tables
+
+# verify a user/passwd
+# To connect to database "hrb" as user "edwprt" with password "foo":
+db2 connect to hrb user edwrpt using foo
+ 
