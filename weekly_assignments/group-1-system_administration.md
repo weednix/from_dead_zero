@@ -22,7 +22,7 @@ here's some other ideas for topics we can choose from:
 disk partitioning and filesystems
 ---------------------------------
 
-+++1) What is a filesystem?
+### 1) What is a filesystem?
 
 focusing on the ext2 filesystem, be able to explain the following stuff:
 
@@ -42,7 +42,7 @@ this second resource gets very detailed.  just read through the topics and skim 
 data types and vars
 
 
-+++2) partition a disk device
+### 2) partition a disk device
 
 prereqs: 
 
@@ -72,7 +72,7 @@ Choose from one of these to create your partitions, but read about both and be
 able to use both to print out partition table
 
 
-+++3) create and mount a filesystem
+### 3) create and mount a filesystem
 
 prereqs: 
   an unformatted partition on some disk device
@@ -92,7 +92,7 @@ commands::
   touch
 
 
-+++4) recovering a bad filesystem
+### 4) recovering a bad filesystem
 
 tasks:
 
