@@ -4,17 +4,17 @@ Group 1: Linux System Administration
 Four topics in this group:
 
 - disk partitioning and filesystems
+- doing backups
 - system performance statistics (sar)
 - finding things
-- regular expressions (grep, awk, sed)
 
 here's some other ideas for topics we can choose from:
 
-- doing backups
 - the /proc filesystem
 - systemd and the init system
 - boot managers
 - package manager
+- regular expressions (grep, awk, sed)
 
 
 
@@ -71,6 +71,10 @@ Commands to use:
 Choose from one of these to create your partitions, but read about both and be
 able to use both to print out partition table
 
+resources:
+
+- http://gnu.ist.utl.pt/software/parted/manual/parted.html
+
 
 ### 3) create and mount a filesystem
 
@@ -110,11 +114,12 @@ tasks:
 .
 
 
+doing backups
+-------------
+
 system performance statistics (sar)
 -----------------------------------
 
 finding things
 --------------
 
-regular expressions (grep, awk, sed)
-------------------------------------
