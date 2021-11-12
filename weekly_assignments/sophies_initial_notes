@@ -1,0 +1,94 @@
+________________________________________________________________________________
+11/12/2021
+
+These are notes from our donut meeting in San Leandro.  Ashley has make some edits.
+
+
+
+Topics:
+  Bash shell:
+    Variable interpolation
+    Data structures 
+  Cloud Networking
+  Linux systems- administration
+  Infrastructure as code
+    ansible
+    aws cdk
+  Python
+  Node.js 
+  Yaml
+
+
+Monthly Plan: Bash scripting to start with
+
+Write a script that will do a certain thing…
+3 different versions happening 3 ways
+Post something on Monday if we could not utilize Friday
+
+Check in point after a month
+Present the script and posting the next 
+Repeat the same topic for the next 
+Something turn in for a discussion
+
+Say what is coming up next
+
+Start off Friday meeting with discussion
+Resulting work of what we worked on the last time
+
+Don’t have to master it before moving on to next topic
+
+Plan:
+Have 4 task to do and to come back to it
+We would all pick the same task to be solved in different ways
+
+
+
+Ansible
+Knowing the error message
+
+The “find” commands to study
+Show work on “git”
+System tasks
+
+Partitioning with file system tools
+
+Tools to explore on a disk drive
+
+Commands
+parted
+dd
+fsck
+e2fsck
+fdisk
+What is a file system look up
+How to change inodes on the hardrive
+sar
+Statistics
+sadc
+How to use the sar command to let know if the disk isle is saturated or not?
+Understand the memory being used
+What disk io being used 
+security , network ports
+Net stat
+To get later into networking
+Using fine code…
+Types of things to look for in file system
+Understand what it all does, design to do a certain thing
+
+5.  Regular expression
+grep and sed
+
+Shell scripting and the bit of data for the strings
+Looking for all files containing regular expression in the last 30 days
+Over 20 megs large
+
+
+Assign various ran the commands
+
+Start practice the commands that you command with
+Running fsck
+Past into a text file
+Everything on Lynx
+Stack overflow to keep open
+ 
+
