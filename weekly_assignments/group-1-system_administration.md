@@ -88,12 +88,12 @@ tasks:
 - make some directories and files in this new filesystem
 - list what you created
 
-commands::
+commands:
 
-  mkfs.ext2
-  mount
-  mkdir
-  touch
+- mkfs.ext2
+- mount
+- mkdir
+- touch
 
 
 ### 4) recovering a bad filesystem
@@ -114,11 +114,66 @@ tasks:
 .
 
 
+system performance statistics
+-----------------------------
+
+read man pages for the following commands:
+
+- free
+- vmstat
+- iostat
+- ps
+- top
+- sar
+
+be able to explain concepts:
+
+- process table:
+
+  - pid
+  - uid
+  - priority
+  - nice
+  - running process
+  - sleeping process
+  - blocked process
+  - run queue
+  - interrupts
+  - context switching
+
+- cpu:
+
+  - user vs. system
+  - i/o wait
+  - idle
+  - load average
+
+- memory
+
+  - used
+  - free
+  - cached
+  - bufferred
+  - swapped
+  - available
+  - shared
+  - virtual set size vs. resident set size
+  - paging
+  - page reclaimation efficiency (sar %vmeff)
+
+- i/o:
+
+  - blocks read/write per second
+  - requests per second
+  - average queue size/length
+  - avarage wait time
+
+
+
+
+
 doing backups
 -------------
-
-system performance statistics (sar)
------------------------------------
 
 finding things
 --------------
