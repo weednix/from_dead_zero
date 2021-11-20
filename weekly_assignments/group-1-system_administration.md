@@ -117,6 +117,25 @@ tasks:
 system performance statistics
 -----------------------------
 
+resources:
+
+- https://tldp.org/LDP/tlk/mm/memory.html
+- https://notes.eddyerburgh.me/operating-systems/linux/process-scheduling
+- http://www.linfo.org/kernel_topics_index.html
+
+  - http://www.linfo.org/kernel.html
+  - http://www.linfo.org/process.html
+  - http://www.linfo.org/pid.html
+  - http://www.linfo.org/process_state.html
+  - http://www.linfo.org/multitasking.html
+  - http://www.linfo.org/kernel_mode.html
+  - http://www.linfo.org/user_mode.html
+  - http://www.linfo.org/system_call.html
+  - http://www.linfo.org/context_switch.html
+  - http://www.linfo.org/software_interrupt.html
+  - http://www.linfo.org/kernel_space.html
+  - http://www.linfo.org/user_space.html
+
 read man pages for the following commands:
 
 - free
@@ -134,6 +153,7 @@ be able to explain concepts:
   - uid
   - priority
   - nice
+  - state
   - running process
   - sleeping process
   - blocked process
