@@ -1,0 +1,3 @@
+Read this today, and unsure of what it's saying...
+  - Shared memory can also be used as an Inter Process Communication (IPC) mechanism, with two or more processes exchanging information via memory common to all of them. Linux supports the Unix TM System V shared memory IPC. 
+  - https://tldp.org/LDP/tlk/mm/memory.html
