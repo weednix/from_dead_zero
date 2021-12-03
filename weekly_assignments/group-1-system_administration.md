@@ -195,6 +195,26 @@ be able to explain concepts:
 doing backups
 -------------
 
+learn commands:
+
+- rsync
+- tar
+
+write a shell script to perform daily incremental backup to a external usb device
+
+write a shell script to perform daily incremental backup to S3 bucket
+
+links:
+
+This article gets very specific about shell scripting.  it's nice:
+https://linuxhint.com/inotofy-rsync-bash-live-backups/
+
+
+
+
+
+
+
 finding things
 --------------
 
