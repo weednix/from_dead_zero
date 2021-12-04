@@ -209,6 +209,8 @@ links:
 This article gets very specific about shell scripting.  it's nice:
 https://linuxhint.com/inotofy-rsync-bash-live-backups/
 
+https://linuxconfig.org/how-to-create-incremental-backups-using-rsync-on-linux
+
 
 
 
